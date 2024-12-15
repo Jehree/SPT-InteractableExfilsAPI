@@ -2,14 +2,8 @@
 using EFT;
 using InteractableExfilsAPI.Common;
 using InteractableExfilsAPI.Singletons;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using EFT.UI;
 using InteractableExfilsAPI.Helpers;
-using System.ComponentModel;
 using Comfort.Common;
 using InteractableExfilsAPI.Components;
 
@@ -112,6 +106,18 @@ namespace InteractableExfilsAPI
             );
 
             return new OnActionsAppliedResult(customExfilAction);
+        }
+
+        // this will cause the mod to ignore ExtractAreaStartsEnabled in the config and always require the mod to be enabled manually
+        public OnActionsAppliedResult RequiresManualActivationsGate3Example(ExfiltrationPoint exfil, CustomExfilTrigger customExfilTrigger, bool exfilIsAvailableToPlayer)
+        {
+            // only when it is the exfil with the name "Gate 3"
+            if (exfil.Settings.Name == "Gate 3")
+            {
+                customExfilTrigger.RequiresManualActivation = true;
+            }
+
+            return null;
         }
     }
 }

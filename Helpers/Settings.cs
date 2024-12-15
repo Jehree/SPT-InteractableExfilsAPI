@@ -1,9 +1,4 @@
 ﻿using BepInEx.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace InteractableExfilsAPI.Helpers
 {
@@ -18,7 +13,7 @@ namespace InteractableExfilsAPI.Helpers
             ExtractAreaStartsEnabled = config.Bind(
                 "1: Settings",
                 "Extract Timer Starts Automatically",
-                true
+                false
             );
 
             InactiveExtractsDisplayUnavailable = config.Bind(

@@ -1,19 +1,9 @@
 ﻿using Comfort.Common;
 using EFT;
 using EFT.Interactive;
-using EFT.UI;
-using InteractableExfilsAPI.Helpers;
 using InteractableExfilsAPI.Singletons;
-using Koenigz.PerfectCulling.EFT;
-using SPT.Reflection.Utils;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-using static InteractableExfilsAPI.Singletons.InteractableExfilsService;
-using static System.Collections.Specialized.BitVector32;
 
 namespace InteractableExfilsAPI.Components
 {

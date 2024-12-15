@@ -5,9 +5,6 @@ using EFT.UI;
 using InteractableExfilsAPI.Common;
 using InteractableExfilsAPI.Helpers;
 using InteractableExfilsAPI.Singletons;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -18,6 +15,7 @@ namespace InteractableExfilsAPI.Components
         public ExfiltrationPoint Exfil { get; private set; }
         public string Description { get; } = "Custom Exfil Trigger";
         public bool ExfilEnabled { get; private set; } = true;
+        public bool RequiresManualActivation { get; set; } = false;
         public bool ExfilIsActiveToPlayer { get; private set; }
         private bool _playerInTriggerArea = false;
 
@@ -51,7 +49,15 @@ namespace InteractableExfilsAPI.Components
             if (player == _player)
             {
                 _playerInTriggerArea = true;
-                SetExfilZoneEnabled(Settings.ExtractAreaStartsEnabled.Value);
+
+                if (RequiresManualActivation)
+                {
+                    SetExfilZoneEnabled(false);
+                }
+                else
+                {
+                    SetExfilZoneEnabled(Settings.ExtractAreaStartsEnabled.Value);
+                }
             }
         }
 

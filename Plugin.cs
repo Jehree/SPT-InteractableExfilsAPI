@@ -1,24 +1,14 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
 using Comfort.Common;
-using EFT;
-using EFT.Interactive;
-using EFT.UI;
-using InteractableExfilsAPI.Common;
-using InteractableExfilsAPI.Components;
 using InteractableExfilsAPI.Helpers;
 using InteractableExfilsAPI.Patches;
 using InteractableExfilsAPI.Singletons;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace InteractableExfilsAPI
 {
-    [BepInPlugin("Jehree.InteractableExfilsAPI", "InteractableExfilsAPI", "1.2.0")]
+    [BepInPlugin("Jehree.InteractableExfilsAPI", "InteractableExfilsAPI", "1.3.0")]
     public class Plugin : BaseUnityPlugin
     {
         public static ManualLogSource LogSource;
@@ -48,6 +38,7 @@ namespace InteractableExfilsAPI
             //Singleton<InteractableExfilsService>.Instance.OnActionsAppliedEvent += examplesClass.DynamicDisabledExample;
             //Singleton<InteractableExfilsService>.Instance.OnActionsAppliedEvent += examplesClass.SoftDynamicDisabledExample;
             //Singleton<InteractableExfilsService>.Instance.OnActionsAppliedEvent += examplesClass.ScavGate3OnlyExample;
+            //Singleton<InteractableExfilsService>.Instance.OnActionsAppliedEvent += examplesClass.RequiresManualActivationsGate3Example;
         }
 
 
