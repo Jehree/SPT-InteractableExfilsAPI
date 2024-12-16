@@ -19,44 +19,39 @@ namespace InteractableExfilsAPI.Components
         public bool ExfilIsActiveToPlayer { get; private set; }
         private bool _playerInTriggerArea = false;
 
-        // it isn't normally necessary to cache these classes, but we are using them in FixedUpdate() so I feel it is best practice here
-        private GameWorld _gameWorld;
-        private Player _player;
-        private GamePlayerOwner _gamePlayerOwner;
+        private InteractableExfilsSession _session;
 
         public void Awake()
         {
-            _gameWorld = Singleton<GameWorld>.Instance;
-            _player = _gameWorld.MainPlayer;
-            _gamePlayerOwner = _player.gameObject.GetComponent<GamePlayerOwner>();
+            _session = InteractableExfilsService.GetSession();
         }
 
         public void Update()
         {
             if (!_playerInTriggerArea) return;
-            if (_gamePlayerOwner.AvailableInteractionState.Value != null) return;
+            if (_session.PlayerOwner.AvailableInteractionState.Value != null) return;
 
             OnActionsAppliedResult eventResult = Singleton<InteractableExfilsService>.Instance.OnActionsApplied(Exfil, this, ExfilIsActiveToPlayer);
             var returnClass = new ActionsReturnClass { Actions = CustomExfilAction.GetActionsTypesClassList(eventResult.Actions) };
             returnClass.InitSelected();
 
-            _gamePlayerOwner.AvailableInteractionState.Value = returnClass;
+            _session.PlayerOwner.AvailableInteractionState.Value = returnClass;
         }
 
         public void OnTriggerEnter(Collider collider)
         {
             Player player = Singleton<GameWorld>.Instance.GetPlayerByCollider(collider);
-            if (player == _player)
+            if (player == _session.MainPlayer)
             {
                 _playerInTriggerArea = true;
 
                 if (RequiresManualActivation)
                 {
-                    SetExfilZoneEnabled(false);
+                    ForceSetExfilZoneEnabled(false);
                 }
                 else
                 {
-                    SetExfilZoneEnabled(Settings.ExtractAreaStartsEnabled.Value);
+                    ForceSetExfilZoneEnabled(Settings.ExtractAreaStartsEnabled.Value);
                 }
             }
         }
@@ -64,29 +59,19 @@ namespace InteractableExfilsAPI.Components
         public void OnTriggerExit(Collider collider)
         {
             Player player = Singleton<GameWorld>.Instance.GetPlayerByCollider(collider);
-            if (player == _player)
+            if (player == _session.MainPlayer)
             {
                 _playerInTriggerArea = false;
-                _gamePlayerOwner.ClearInteractionState();
-                SetExfilZoneEnabled(true);
+                _session.PlayerOwner.ClearInteractionState();
+                ForceSetExfilZoneEnabled(true);
             }
         }
 
-        public void SetExfil(ExfiltrationPoint exfil)
+        internal void Init(ExfiltrationPoint exfil, bool exfilIsActiveToPlayer)
         {
             Exfil = exfil;
-        }
-
-        public void SetExfilIsActiveToPlayer(bool exfilIsActiveToPlayer)
-        {
             ExfilIsActiveToPlayer = exfilIsActiveToPlayer;
         }
-
-        //-116.9174 -18 169.2975
-        // labs ele switch -276.1301 -2.3366 -364.7404
-        // labs sewer -131.3852 -5.4804 -266.646
-        // labs cargo switch -122.9479 -4 -355.3093
-        // labs cargo ele -118.9453 4 -406.0783
 
         private void EnableExfilZone()
         {
@@ -102,7 +87,10 @@ namespace InteractableExfilsAPI.Components
             
         }
 
-        public void SetExfilZoneEnabled(bool enabled)
+        /// <summary>
+        /// Force enables or disables a zone, does not do any exfil requirement checks.
+        /// </summary>
+        public void ForceSetExfilZoneEnabled(bool enabled)
         {
             if (enabled)
             {
@@ -114,18 +102,21 @@ namespace InteractableExfilsAPI.Components
             }
         }
 
+        /// <summary>
+        /// Toggles exfil zone enabled normally. Does exfil requirement checks and gives the player tips on missing requirements if they are not met.
+        /// </summary>
         public void ToggleExfilZoneEnabled()
         {
-            if (Exfil.HasRequirements && !Exfil.HasMetRequirements(_player.ProfileId))
+            if (Exfil.HasRequirements && !Exfil.HasMetRequirements(_session.MainPlayer.ProfileId))
             {
-                if (!Exfil.UnmetRequirements(_player).ToArray<ExfiltrationRequirement>().Any<ExfiltrationRequirement>())
+                if (!Exfil.UnmetRequirements(_session.MainPlayer).ToArray<ExfiltrationRequirement>().Any<ExfiltrationRequirement>())
                 {
-                    Singleton<InteractableExfilsService>.Instance.AddPlayerToPlayersMetAllRequirements(Exfil, _player.ProfileId);
+                    Singleton<InteractableExfilsService>.Instance.AddPlayerToPlayersMetAllRequirements(Exfil, _session.MainPlayer.ProfileId);
                     ToggleExfilZoneEnabled();
                     return;
                 }
 
-                string tips = string.Join(", ", Exfil.GetTips(_player.ProfileId));
+                string tips = string.Join(", ", Exfil.GetTips(_session.MainPlayer.ProfileId));
                 ConsoleScreen.Log($"You have not met the extract requirements for {Exfil.Settings.Name}!");
                 NotificationManagerClass.DisplayWarningNotification($"{tips}");
                 Singleton<GUISounds>.Instance.PlayUISound(EUISoundType.ErrorMessage);

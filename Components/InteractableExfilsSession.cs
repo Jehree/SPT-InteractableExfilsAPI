@@ -12,12 +12,18 @@ namespace InteractableExfilsAPI.Components
         public List<ExfiltrationPoint> ActiveExfils { get; private set; } = new List<ExfiltrationPoint>();
         public List<ExfiltrationPoint> InactiveExfils { get; private set; } = new List<ExfiltrationPoint>();
         public List<CustomExfilTrigger> CustomExfilTriggers { get; private set; } = new List<CustomExfilTrigger>();
+        public GameWorld World { get; private set; }
+        public Player MainPlayer { get; private set; }
+        public GamePlayerOwner PlayerOwner { get; private set; }
 
 
-        public InteractableExfilsSession()
+        internal InteractableExfilsSession()
         {
             FillExfilLists();
             CreateAllCustomExfilTriggers();
+            World = Singleton<GameWorld>.Instance;
+            MainPlayer = World.MainPlayer;
+            PlayerOwner = MainPlayer.gameObject.GetComponent<GamePlayerOwner>();
         }
 
         public void OnDestroy()
@@ -61,8 +67,7 @@ namespace InteractableExfilsAPI.Components
             customExfilTriggerObject.transform.localScale = exfil.gameObject.transform.localScale;
             CustomExfilTrigger customExfilTrigger = customExfilTriggerObject.AddComponent<CustomExfilTrigger>();
 
-            customExfilTrigger.SetExfil(exfil);
-            customExfilTrigger.SetExfilIsActiveToPlayer(exfilIsActiveToPlayer);
+            customExfilTrigger.Init(exfil, exfilIsActiveToPlayer);
             CustomExfilTriggers.Add(customExfilTrigger);
         }
 

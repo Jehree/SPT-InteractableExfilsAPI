@@ -6,13 +6,14 @@ using EFT.UI;
 using InteractableExfilsAPI.Helpers;
 using Comfort.Common;
 using InteractableExfilsAPI.Components;
+using System.Collections.Generic;
 
 namespace InteractableExfilsAPI
 {
-    public class Examples
+    internal static class Examples
     {
         // this example will add an enabled static action to every single extract in the game
-        public OnActionsAppliedResult SimpleExample(ExfiltrationPoint exfil, CustomExfilTrigger customExfilTrigger, bool exfilIsAvailableToPlayer)
+        public static OnActionsAppliedResult SimpleExample(ExfiltrationPoint exfil, CustomExfilTrigger customExfilTrigger, bool exfilIsAvailableToPlayer)
         {
             CustomExfilAction customExfilAction = new CustomExfilAction(
                 "Example Interaction",
@@ -25,7 +26,7 @@ namespace InteractableExfilsAPI
 
 
 
-        public OnActionsAppliedResult ScavGate3OnlyExample(ExfiltrationPoint exfil, CustomExfilTrigger customExfilTrigger, bool exfilIsAvailableToPlayer)
+        public static OnActionsAppliedResult ScavGate3OnlyExample(ExfiltrationPoint exfil, CustomExfilTrigger customExfilTrigger, bool exfilIsAvailableToPlayer)
         {
             // return null to skip adding an action to certain exfils. In this case, we are only adding the action when the player is a scav.
             Player player = Singleton<GameWorld>.Instance.MainPlayer;
@@ -53,7 +54,7 @@ namespace InteractableExfilsAPI
         // NOTE: disabled state will only update when an interaction menu first appears, this means if it is updated while the player is inside an exfil area,
         // they will have to either exit and re-enter it, or look at something else like loot on the ground and then away again to get the interaction menu to refresh.
         // for these reasons, I recommend only using this when you know that the player cannot be inside the exfil area when the disabled condition is updated.
-        public OnActionsAppliedResult DynamicDisabledExample(ExfiltrationPoint exfil, CustomExfilTrigger customExfilTrigger, bool exfilIsAvailableToPlayer)
+        public static OnActionsAppliedResult DynamicDisabledExample(ExfiltrationPoint exfil, CustomExfilTrigger customExfilTrigger, bool exfilIsAvailableToPlayer)
         {
             CustomExfilAction customExfilAction = new CustomExfilAction(
                 "I'm only active when Debug Mode is on (hard disable)",
@@ -67,7 +68,7 @@ namespace InteractableExfilsAPI
 
 
         // this example is the same as above, but the action will entirely be absent from the list if it is "disabled"
-        public OnActionsAppliedResult GoneWhenDisabledExample(ExfiltrationPoint exfil, CustomExfilTrigger customExfilTrigger, bool exfilIsAvailableToPlayer)
+        public static OnActionsAppliedResult GoneWhenDisabledExample(ExfiltrationPoint exfil, CustomExfilTrigger customExfilTrigger, bool exfilIsAvailableToPlayer)
         {
             if (!Settings.DebugMode.Value) return null;
 
@@ -83,7 +84,7 @@ namespace InteractableExfilsAPI
 
 
         // If you need the interaction to update while the player is inside the exfil, consider doing a "soft" disable behavior like below:
-        public OnActionsAppliedResult SoftDynamicDisabledExample(ExfiltrationPoint exfil, CustomExfilTrigger customExfilTrigger, bool exfilIsAvailableToPlayer)
+        public static OnActionsAppliedResult SoftDynamicDisabledExample(ExfiltrationPoint exfil, CustomExfilTrigger customExfilTrigger, bool exfilIsAvailableToPlayer)
         {
             CustomExfilAction customExfilAction = new CustomExfilAction(
                 "I'm only active when Debug Mode is on (soft disable)",
@@ -109,7 +110,7 @@ namespace InteractableExfilsAPI
         }
 
         // this will cause the mod to ignore ExtractAreaStartsEnabled in the config and always require the mod to be enabled manually
-        public OnActionsAppliedResult RequiresManualActivationsGate3Example(ExfiltrationPoint exfil, CustomExfilTrigger customExfilTrigger, bool exfilIsAvailableToPlayer)
+        public static OnActionsAppliedResult RequiresManualActivationsGate3Example(ExfiltrationPoint exfil, CustomExfilTrigger customExfilTrigger, bool exfilIsAvailableToPlayer)
         {
             // only when it is the exfil with the name "Gate 3"
             if (exfil.Settings.Name == "Gate 3")
@@ -118,6 +119,37 @@ namespace InteractableExfilsAPI
             }
 
             return null;
+        }
+
+
+        // prompt refreshing example
+        public static int Counter = 1;
+        public static OnActionsAppliedResult PromptRefreshingExample(ExfiltrationPoint exfil, CustomExfilTrigger customExfilTrigger, bool exfilIsAvailableToPlayer)
+        {
+            CustomExfilAction increaseCounterAction = new CustomExfilAction(
+                $"Increase Counter: {Counter}",
+                false,
+                () =>
+                {
+                    Counter++;
+                    InteractableExfilsService.RefreshPrompt();
+                }
+            );
+            CustomExfilAction decreaseCounterAction = new CustomExfilAction(
+                $"Decrease Counter: {Counter}",
+                false,
+                () =>
+                {
+                    Counter--;
+                    InteractableExfilsService.RefreshPrompt();
+                }
+            );
+
+            List<CustomExfilAction> actions = new List<CustomExfilAction>();
+            actions.Add(increaseCounterAction);
+            actions.Add(decreaseCounterAction);
+
+            return new OnActionsAppliedResult(actions);
         }
     }
 }

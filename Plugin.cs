@@ -8,7 +8,7 @@ using System.Reflection;
 
 namespace InteractableExfilsAPI
 {
-    [BepInPlugin("Jehree.InteractableExfilsAPI", "InteractableExfilsAPI", "1.3.0")]
+    [BepInPlugin("Jehree.InteractableExfilsAPI", "InteractableExfilsAPI", "1.3.1")]
     public class Plugin : BaseUnityPlugin
     {
         public static ManualLogSource LogSource;
@@ -32,13 +32,13 @@ namespace InteractableExfilsAPI
 
         private void Start()
         {
-            //Examples examplesClass = new Examples();
-            //Singleton<InteractableExfilsService>.Instance.OnActionsAppliedEvent += examplesClass.SimpleExample;
-            //Singleton<InteractableExfilsService>.Instance.OnActionsAppliedEvent += examplesClass.GoneWhenDisabledExample;
-            //Singleton<InteractableExfilsService>.Instance.OnActionsAppliedEvent += examplesClass.DynamicDisabledExample;
-            //Singleton<InteractableExfilsService>.Instance.OnActionsAppliedEvent += examplesClass.SoftDynamicDisabledExample;
-            //Singleton<InteractableExfilsService>.Instance.OnActionsAppliedEvent += examplesClass.ScavGate3OnlyExample;
-            //Singleton<InteractableExfilsService>.Instance.OnActionsAppliedEvent += examplesClass.RequiresManualActivationsGate3Example;
+            //Singleton<InteractableExfilsService>.Instance.OnActionsAppliedEvent += Examples.SimpleExample;
+            //Singleton<InteractableExfilsService>.Instance.OnActionsAppliedEvent += Examples.GoneWhenDisabledExample;
+            //Singleton<InteractableExfilsService>.Instance.OnActionsAppliedEvent += Examples.DynamicDisabledExample;
+            //Singleton<InteractableExfilsService>.Instance.OnActionsAppliedEvent += Examples.SoftDynamicDisabledExample;
+            //Singleton<InteractableExfilsService>.Instance.OnActionsAppliedEvent += Examples.ScavGate3OnlyExample;
+            //Singleton<InteractableExfilsService>.Instance.OnActionsAppliedEvent += Examples.RequiresManualActivationsGate3Example;
+            //Singleton<InteractableExfilsService>.Instance.OnActionsAppliedEvent += Examples.PromptRefreshingExample;
         }
 
 

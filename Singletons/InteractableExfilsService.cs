@@ -23,6 +23,7 @@ namespace InteractableExfilsAPI.Singletons
     public class OnActionsAppliedResult
     {
         public List<CustomExfilAction> Actions { get; private set; }
+
         public OnActionsAppliedResult()
         {
             Actions = new List<CustomExfilAction>();
@@ -40,7 +41,10 @@ namespace InteractableExfilsAPI.Singletons
         public OnActionsAppliedResult(List<CustomExfilAction> actions)
         {
             Actions = new List<CustomExfilAction>();
-            Actions.AddRange(actions);
+            if (actions.Any())
+            {
+                Actions.AddRange(actions);
+            }
         }
     }
 
@@ -142,6 +146,11 @@ namespace InteractableExfilsAPI.Singletons
             }
 
             return session;
+        }
+
+        public static void RefreshPrompt()
+        {
+            GetSession().PlayerOwner.ClearInteractionState();
         }
 
         public static bool ExfilHasRequirement(ExfiltrationPoint exfil, ERequirementState requirement)

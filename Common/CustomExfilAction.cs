@@ -5,9 +5,9 @@ namespace InteractableExfilsAPI.Common
 {
     public class CustomExfilAction
     {
-        public Action Action;
-        public Func<string> GetName { get; private set; }
-        public Func<bool> GetDisabled { get; private set; }
+        public Action Action { get; set; }
+        public Func<string> GetName { get; set; }
+        public Func<bool> GetDisabled { get; set; }
 
         /// <summary>
         /// Custom Exfil Action to be added to an interactable Exfil interaction prompt<br/>
@@ -29,7 +29,7 @@ namespace InteractableExfilsAPI.Common
             GetDisabled = getDisabled;
             Action = action;
         }
-
+        
         public CustomExfilAction(string name, Func<bool> getDisabled, Action action) // simple name, dynamic disabled
         {
             GetName = () => name;
