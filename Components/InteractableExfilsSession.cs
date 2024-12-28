@@ -31,7 +31,11 @@ namespace InteractableExfilsAPI.Components
             // destroy all triggers to avoid end of raid null refs
             foreach (var trigger in CustomExfilTriggers)
             {
-                GameObject.Destroy(trigger.gameObject);
+                if (!trigger.IsNullOrDestroyed())
+                {
+
+                    GameObject.Destroy(trigger.gameObject);
+                }
             }
         }
 
