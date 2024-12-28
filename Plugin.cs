@@ -32,15 +32,13 @@ namespace InteractableExfilsAPI
 
         private void Start()
         {
-            //Singleton<InteractableExfilsService>.Instance.OnActionsAppliedEvent += Examples.SimpleExample;
-            //Singleton<InteractableExfilsService>.Instance.OnActionsAppliedEvent += Examples.GoneWhenDisabledExample;
-            //Singleton<InteractableExfilsService>.Instance.OnActionsAppliedEvent += Examples.DynamicDisabledExample;
-            //Singleton<InteractableExfilsService>.Instance.OnActionsAppliedEvent += Examples.SoftDynamicDisabledExample;
-            //Singleton<InteractableExfilsService>.Instance.OnActionsAppliedEvent += Examples.ScavGate3OnlyExample;
-            //Singleton<InteractableExfilsService>.Instance.OnActionsAppliedEvent += Examples.RequiresManualActivationsGate3Example;
-            //Singleton<InteractableExfilsService>.Instance.OnActionsAppliedEvent += Examples.PromptRefreshingExample;
+            // Singleton<InteractableExfilsService>.Instance.OnActionsAppliedEvent += Examples.SimpleExample;
+            // Singleton<InteractableExfilsService>.Instance.OnActionsAppliedEvent += Examples.GoneWhenDisabledExample;
+            // Singleton<InteractableExfilsService>.Instance.OnActionsAppliedEvent += Examples.DynamicDisabledExample;
+            // Singleton<InteractableExfilsService>.Instance.OnActionsAppliedEvent += Examples.SoftDynamicDisabledExample;
+            // Singleton<InteractableExfilsService>.Instance.OnActionsAppliedEvent += Examples.ScavGate3OnlyExample;
+            // Singleton<InteractableExfilsService>.Instance.OnActionsAppliedEvent += Examples.RequiresManualActivationsGate3Example;
+            // Singleton<InteractableExfilsService>.Instance.OnActionsAppliedEvent += Examples.PromptRefreshingExample;
         }
-
-
     }
 }
