@@ -33,13 +33,13 @@ Check the [Examples](./Examples.cs) class to see more examples
 You can retrieve the `InteractableExfilsService` in the `Start` method of your `BaseUnityPlugin`
 
 ```cs
-InteractableExfilsService exfilsServices = Singleton<InteractableExfilsService>.Instance;
+InteractableExfilsService exfilsService = InteractableExfilsService.Instance();
 ```
 
 and use it to register your own actions: 
 
 ```cs
-exfilsServices.OnActionsAppliedEvent += Examples.SimpleExample;
+exfilsService.OnActionsAppliedEvent += Examples.SimpleExample;
 ```
 
 

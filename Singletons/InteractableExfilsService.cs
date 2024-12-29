@@ -46,6 +46,7 @@ namespace InteractableExfilsAPI.Singletons
 
     public class InteractableExfilsService
     {
+        public bool DisableVanillaActions { get; set; } = false;
         public delegate OnActionsAppliedResult ActionsAppliedEventHandler(ExfiltrationPoint exfil, CustomExfilTrigger customExfilTrigger, bool exfilIsAvailableToPlayer);
 
         // other mods can subscribe to this event and optionally pass ActionsTypesClass(es) back to be added to the interactable objects
@@ -68,6 +69,11 @@ namespace InteractableExfilsAPI.Singletons
             }
 
             return result;
+        }
+
+        public static InteractableExfilsService Instance()
+        {
+            return Singleton<InteractableExfilsService>.Instance;
         }
 
         public static CustomExfilAction GetDebugAction(ExfiltrationPoint exfil)
