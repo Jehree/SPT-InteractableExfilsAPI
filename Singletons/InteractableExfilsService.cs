@@ -6,13 +6,9 @@ using HarmonyLib;
 using InteractableExfilsAPI.Common;
 using InteractableExfilsAPI.Components;
 using InteractableExfilsAPI.Helpers;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
 
 namespace InteractableExfilsAPI.Singletons
 {
@@ -148,9 +144,18 @@ namespace InteractableExfilsAPI.Singletons
             return session;
         }
 
+        /// <summary>
+        /// Deprecated: use CustomExfilTrigger.RefreshPrompt() instead
+        /// </summary>
         public static void RefreshPrompt()
         {
             GetSession().PlayerOwner.ClearInteractionState();
+
+            string deprecationMessage = "InteractableExfilsService.RefreshPrompt is deprecated, prefer using InteractableExfilsService.RefreshPrompt";
+            Plugin.LogSource.LogWarning(deprecationMessage);
+            ConsoleScreen.LogWarning(deprecationMessage);
+            NotificationManagerClass.DisplayMessageNotification(deprecationMessage);
+
         }
 
         public static bool ExfilHasRequirement(ExfiltrationPoint exfil, ERequirementState requirement)
@@ -187,7 +192,6 @@ namespace InteractableExfilsAPI.Singletons
         {
             if (!Settings.InactiveExtractsDisplayUnavailable.Value) return null;
             if (exfilIsAvailableToPlayer) return null;
-            if (customExfilTrigger == null) return null; // exfil is car or labs elevator or other extract we aren't making a trigger for
 
             CustomExfilAction customExfilAction = new CustomExfilAction(
                 "Extract Unavailable",
@@ -201,7 +205,6 @@ namespace InteractableExfilsAPI.Singletons
         public OnActionsAppliedResult ApplyExtractToggleAction(ExfiltrationPoint exfil, CustomExfilTrigger customExfilTrigger, bool exfilIsAvailableToPlayer)
         {
             if (!exfilIsAvailableToPlayer) return null;
-            if (customExfilTrigger == null) return null; // exfil is car or labs elevator or other extract we aren't making a trigger for
 
             CustomExfilAction customExfilAction = GetExfilToggleAction(customExfilTrigger);
 

@@ -71,7 +71,7 @@ namespace InteractableExfilsAPI.Components
             customExfilTriggerObject.transform.localScale = exfil.gameObject.transform.localScale;
             CustomExfilTrigger customExfilTrigger = customExfilTriggerObject.AddComponent<CustomExfilTrigger>();
 
-            customExfilTrigger.Init(exfil, exfilIsActiveToPlayer);
+            customExfilTrigger.Init(exfil, exfilIsActiveToPlayer, []);
             CustomExfilTriggers.Add(customExfilTrigger);
         }
 

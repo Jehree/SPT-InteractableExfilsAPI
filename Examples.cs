@@ -20,7 +20,7 @@ namespace InteractableExfilsAPI
                 false,
                 () => { NotificationManagerClass.DisplayMessageNotification("Simple Intercation Example Selected!"); }
             );
-            
+
             return new OnActionsAppliedResult(customExfilAction);
         }
 
@@ -91,7 +91,7 @@ namespace InteractableExfilsAPI
                 false, // leave the action itself always enabled
                 () =>
                 {
-                    if ( !Settings.DebugMode.Value )
+                    if (!Settings.DebugMode.Value)
                     {
                         // check your disabled condition inside the action, and display a warning notif and an error sound if it isn't met followed by a return.
                         // this does a decent job of maintaining good player feedback so they know why the interaction didn't work, while allowing you to capture
@@ -132,7 +132,7 @@ namespace InteractableExfilsAPI
                 () =>
                 {
                     Counter++;
-                    InteractableExfilsService.RefreshPrompt();
+                    customExfilTrigger.RefreshPrompt();
                 }
             );
             CustomExfilAction decreaseCounterAction = new CustomExfilAction(
@@ -141,7 +141,7 @@ namespace InteractableExfilsAPI
                 () =>
                 {
                     Counter--;
-                    InteractableExfilsService.RefreshPrompt();
+                    customExfilTrigger.RefreshPrompt();
                 }
             );
 

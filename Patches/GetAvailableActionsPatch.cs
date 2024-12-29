@@ -1,18 +1,12 @@
-﻿using Comfort.Common;
-using EFT;
+﻿using EFT;
 using EFT.Interactive;
+using EFT.UI;
 using HarmonyLib;
-using InteractableExfilsAPI.Common;
 using InteractableExfilsAPI.Components;
 using InteractableExfilsAPI.Singletons;
 using SPT.Reflection.Patching;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
 
 namespace InteractableExfilsAPI.Patches
 {
@@ -43,9 +37,8 @@ namespace InteractableExfilsAPI.Patches
         [PatchPrefix]
         public static bool PatchPrefix(object[] __args, ref ActionsReturnClass __result)
         {
-            var player = Singleton<GameWorld>.Instance.MainPlayer;
             var owner = __args[0] as GamePlayerOwner;
-            var interactive = __args[1]; // as GInterface114 as of SPT 3.9.5
+            var interactive = __args[1]; // as GInterface139 as of SPT 3.10.3
 
             bool isCarExtract = InteractiveIsCarExtract(interactive);
             bool isElevatorSwitch = InteractiveIsElevatorSwitch(interactive);
@@ -53,13 +46,11 @@ namespace InteractableExfilsAPI.Patches
             if (isCarExtract || isElevatorSwitch)
             {
                 ExfiltrationPoint exfil = GetExfilPointFromInteractive(interactive);
+                List<ActionsTypesClass> vanillaActions = GetVanillaInteractionActions(owner, interactive);
+                CustomExfilTrigger customTrigger = CreateCustomExfilTrigger(exfil, vanillaActions);
+                ActionsReturnClass prompt = customTrigger.CreateExfilPrompt();
 
-                List<ActionsTypesClass> actions = new List<ActionsTypesClass>();
-                actions.AddRange(GetVanillaInteractionActions(owner, interactive));
-                actions.AddRange(GetCustomExfilActions(exfil));
-
-                __result = new ActionsReturnClass { Actions = actions };
-
+                __result = prompt;
                 return false;
             }
 
@@ -68,14 +59,14 @@ namespace InteractableExfilsAPI.Patches
 
         private static bool InteractiveIsCarExtract(object interactive)
         {
-            if (!(interactive is ExfiltrationPoint)) return false;
+            if (interactive is not ExfiltrationPoint) return false;
             if (InteractableExfilsService.ExfilIsCar((ExfiltrationPoint)interactive)) return true;
             return false;
         }
 
         private static bool InteractiveIsElevatorSwitch(object interactive)
         {
-            if (!(interactive is Switch)) return false;
+            if (interactive is not Switch) return false;
             Switch switcheroo = interactive as Switch;
             if (switcheroo.ExfiltrationPoint == null) return false;
             if (!InteractableExfilsService.ExfilIsElevator(switcheroo.ExfiltrationPoint)) return false;
@@ -84,15 +75,13 @@ namespace InteractableExfilsAPI.Patches
 
         private static ExfiltrationPoint GetExfilPointFromInteractive(object interactive)
         {
-            if (interactive is Switch) return ((Switch)interactive).ExfiltrationPoint;
+            if (interactive is Switch @switch) return @switch.ExfiltrationPoint;
             return interactive as ExfiltrationPoint;
         }
 
         private static List<ActionsTypesClass> GetVanillaInteractionActions(GamePlayerOwner gamePlayerOwner, object interactive)
         {
-            object[] args = new object[2];
-            args[0] = gamePlayerOwner;
-            args[1] = interactive;
+            object[] args = [gamePlayerOwner, interactive];
 
             MethodInfo methodInfo = null;
             if (interactive is ExfiltrationPoint)
@@ -105,15 +94,21 @@ namespace InteractableExfilsAPI.Patches
             }
 
             List<ActionsTypesClass> vanillaExfilActions = ((ActionsReturnClass)methodInfo.Invoke(null, args))?.Actions;
-            return vanillaExfilActions ?? new List<ActionsTypesClass>();
+            return vanillaExfilActions ?? [];
         }
 
-        private static List<ActionsTypesClass> GetCustomExfilActions(ExfiltrationPoint exfil)
+        private static CustomExfilTrigger CreateCustomExfilTrigger(ExfiltrationPoint exfil, List<ActionsTypesClass> vanillaActions)
         {
-            var player = Singleton<GameWorld>.Instance.MainPlayer;
-            OnActionsAppliedResult eventResult = Singleton<InteractableExfilsService>.Instance.OnActionsApplied(exfil, null, true);
+            bool exfilIsActiveToPlayer = true;
+            var customTrigger = new CustomExfilTrigger();
+            customTrigger.Awake();
+            customTrigger.Init(exfil, exfilIsActiveToPlayer, vanillaActions);
 
-            return CustomExfilAction.GetActionsTypesClassList(eventResult.Actions);
+            string message = $"GetActionsClassWithCustomActions called for exfil {exfil.Settings.Name}!\n";
+            ConsoleScreen.Log(message);
+            Plugin.LogSource.LogInfo(message);
+
+            return customTrigger;
         }
     }
 }
