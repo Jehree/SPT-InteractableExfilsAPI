@@ -37,7 +37,7 @@ namespace InteractableExfilsAPI.Components
             if (!_playerInTriggerArea) return;
             if (_session.PlayerOwner.AvailableInteractionState.Value != null) return;
 
-            UpdateExfilPrompt();
+            UpdateExfilPrompt(true);
         }
 
         public void OnTriggerEnter(Collider collider)
@@ -107,11 +107,13 @@ namespace InteractableExfilsAPI.Components
             return newActionsReturn;
         }
 
-        internal ActionsReturnClass UpdateExfilPrompt()
+        internal void UpdateExfilPrompt(bool forceCreation)
         {
-            ActionsReturnClass exfilPrompt = CreateExfilPrompt();
-            _session.PlayerOwner.AvailableInteractionState.Value = exfilPrompt;
-            return exfilPrompt;
+            if (forceCreation || _session.PlayerOwner.AvailableInteractionState.Value != null)
+            {
+                ActionsReturnClass exfilPrompt = CreateExfilPrompt();
+                _session.PlayerOwner.AvailableInteractionState.Value = exfilPrompt;
+            }
         }
 
         private void EnableExfilZone()
@@ -184,7 +186,7 @@ namespace InteractableExfilsAPI.Components
             else
             {
 
-                UpdateExfilPrompt();
+                UpdateExfilPrompt(false);
             }
         }
     }

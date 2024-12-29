@@ -1,4 +1,7 @@
-﻿using BepInEx.Configuration;
+﻿using System;
+using BepInEx.Configuration;
+using EFT.UI;
+using InteractableExfilsAPI.Singletons;
 
 namespace InteractableExfilsAPI.Helpers
 {
@@ -7,26 +10,37 @@ namespace InteractableExfilsAPI.Helpers
         public static ConfigEntry<bool> ExtractAreaStartsEnabled;
         public static ConfigEntry<bool> InactiveExtractsDisplayUnavailable;
         public static ConfigEntry<bool> DebugMode;
-        
-        public static void Init (ConfigFile config)
+
+        private static void OnSettingsChanged(object sender, EventArgs e)
+        {
+            Plugin.LogSource.LogInfo("BepInEx setting changed, refresh prompt");
+            InteractableExfilsService.RefreshPrompt();
+        }
+
+        public static void Init(ConfigFile config)
         {
             ExtractAreaStartsEnabled = config.Bind(
-                "1: Settings",
-                "Extract Timer Starts Automatically",
-                false
+                "Settings",
+                "Auto-Extract",
+                false,
+                new ConfigDescription("Extract Timer Starts Automatically", null, new ConfigurationManagerAttributes { })
             );
 
             InactiveExtractsDisplayUnavailable = config.Bind(
-                "1: Settings",
-                "Unnavailable Extracts Display as Unavailable",
-                false
+                "Settings",
+                "Show unavailable extracts",
+                false,
+                new ConfigDescription("Unavailable Extracts Display as Unavailable", null, new ConfigurationManagerAttributes { })
             );
 
             DebugMode = config.Bind(
-                "2: Debug",
+                "Debug",
                 "Enable Debug Actions",
-                false
+                false,
+                new ConfigDescription("", null, new ConfigurationManagerAttributes { IsAdvanced = true })
             );
+
+            config.SettingChanged += OnSettingsChanged;
         }
     }
 }
