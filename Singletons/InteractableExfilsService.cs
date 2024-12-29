@@ -55,6 +55,7 @@ namespace InteractableExfilsAPI.Singletons
         // other mods can subscribe to this event and optionally pass ActionsTypesClass(es) back to be added to the interactable objects
         public event ActionsAppliedEventHandler OnActionsAppliedEvent;
         private FieldInfo _exfilPlayersMetAllRequirementsFieldInfo = AccessTools.Field(typeof(ExfiltrationPoint), "_playersMetAllRequirements");
+        internal static CustomExfilTrigger LatestCustomExfilTrigger { get; set; }
 
         public virtual OnActionsAppliedResult OnActionsApplied(ExfiltrationPoint exfil, CustomExfilTrigger customExfilTrigger, bool exfilIsAvailableToPlayer)
         {
@@ -150,7 +151,17 @@ namespace InteractableExfilsAPI.Singletons
 
         public static void RefreshPrompt()
         {
-            GetSession().PlayerOwner.ClearInteractionState();
+            if (LatestCustomExfilTrigger != null)
+            {
+                LatestCustomExfilTrigger.UpdateExfilPrompt();
+            }
+            else
+            {
+                GetSession().PlayerOwner.ClearInteractionState();
+                string warnMsg = "InteractableExfilsService.RefreshPrompt called but player interaction state has been cleared";
+                Plugin.LogSource.LogWarning(warnMsg);
+                ConsoleScreen.LogWarning(warnMsg);
+            }
         }
 
         public static bool ExfilHasRequirement(ExfiltrationPoint exfil, ERequirementState requirement)
@@ -187,7 +198,6 @@ namespace InteractableExfilsAPI.Singletons
         {
             if (!Settings.InactiveExtractsDisplayUnavailable.Value) return null;
             if (exfilIsAvailableToPlayer) return null;
-            if (customExfilTrigger == null) return null; // exfil is car or labs elevator or other extract we aren't making a trigger for
 
             CustomExfilAction customExfilAction = new CustomExfilAction(
                 "Extract Unavailable",
@@ -201,7 +211,6 @@ namespace InteractableExfilsAPI.Singletons
         public OnActionsAppliedResult ApplyExtractToggleAction(ExfiltrationPoint exfil, CustomExfilTrigger customExfilTrigger, bool exfilIsAvailableToPlayer)
         {
             if (!exfilIsAvailableToPlayer) return null;
-            if (customExfilTrigger == null) return null; // exfil is car or labs elevator or other extract we aren't making a trigger for
 
             CustomExfilAction customExfilAction = GetExfilToggleAction(customExfilTrigger);
 

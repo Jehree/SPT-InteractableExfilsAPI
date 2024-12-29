@@ -31,11 +31,7 @@ namespace InteractableExfilsAPI.Components
             if (!_playerInTriggerArea) return;
             if (_session.PlayerOwner.AvailableInteractionState.Value != null) return;
 
-            OnActionsAppliedResult eventResult = Singleton<InteractableExfilsService>.Instance.OnActionsApplied(Exfil, this, ExfilIsActiveToPlayer);
-            var returnClass = new ActionsReturnClass { Actions = CustomExfilAction.GetActionsTypesClassList(eventResult.Actions) };
-            returnClass.InitSelected();
-
-            _session.PlayerOwner.AvailableInteractionState.Value = returnClass;
+            UpdateExfilPrompt();
         }
 
         public void OnTriggerEnter(Collider collider)
@@ -58,6 +54,7 @@ namespace InteractableExfilsAPI.Components
 
         public void OnTriggerExit(Collider collider)
         {
+            InteractableExfilsService.LatestCustomExfilTrigger = null;
             Player player = Singleton<GameWorld>.Instance.GetPlayerByCollider(collider);
             if (player == _session.MainPlayer)
             {
@@ -73,18 +70,55 @@ namespace InteractableExfilsAPI.Components
             ExfilIsActiveToPlayer = exfilIsActiveToPlayer;
         }
 
+        internal ActionsReturnClass CreateExfilPrompt()
+        {
+            InteractableExfilsService.LatestCustomExfilTrigger = this;
+            ActionsReturnClass actionsReturn = _session.PlayerOwner.AvailableInteractionState.Value;
+
+            var selectedActionIndex = 0;
+            if (actionsReturn != null)
+            {
+                selectedActionIndex = actionsReturn.Actions.IndexOf(actionsReturn.SelectedAction);
+                if (selectedActionIndex == -1)
+                {
+                    selectedActionIndex = 0;
+                }
+            }
+
+            OnActionsAppliedResult eventResult = Singleton<InteractableExfilsService>.Instance.OnActionsApplied(Exfil, this, ExfilIsActiveToPlayer);
+            var actions = CustomExfilAction.GetActionsTypesClassList(eventResult.Actions);
+            if (actions.Count == 0) return new ActionsReturnClass { Actions = [] };
+
+            actionsReturn = new ActionsReturnClass { Actions = actions };
+
+            if (selectedActionIndex >= actions.Count)
+            {
+                selectedActionIndex = actions.Count - 1;
+            }
+
+            var selectedAction = actions[selectedActionIndex];
+            actionsReturn.SelectAction(selectedAction);
+
+            return actionsReturn;
+        }
+
+        internal void UpdateExfilPrompt()
+        {
+            ActionsReturnClass exfilPrompt = CreateExfilPrompt();
+            _session.PlayerOwner.AvailableInteractionState.Value = exfilPrompt;
+        }
+
         private void EnableExfilZone()
         {
             Exfil.gameObject.GetComponent<BoxCollider>().enabled = true;
             ExfilEnabled = true;
-            
         }
 
         private void DisableExfilZone()
         {
             Exfil.gameObject.GetComponent<BoxCollider>().enabled = false;
             ExfilEnabled = false;
-            
+
         }
 
         /// <summary>

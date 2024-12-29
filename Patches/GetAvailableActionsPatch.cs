@@ -43,9 +43,8 @@ namespace InteractableExfilsAPI.Patches
         [PatchPrefix]
         public static bool PatchPrefix(object[] __args, ref ActionsReturnClass __result)
         {
-            var player = Singleton<GameWorld>.Instance.MainPlayer;
             var owner = __args[0] as GamePlayerOwner;
-            var interactive = __args[1]; // as GInterface114 as of SPT 3.9.5
+            var interactive = __args[1]; // as GInterface139 as of SPT 3.10.3
 
             bool isCarExtract = InteractiveIsCarExtract(interactive);
             bool isElevatorSwitch = InteractiveIsElevatorSwitch(interactive);
@@ -54,11 +53,8 @@ namespace InteractableExfilsAPI.Patches
             {
                 ExfiltrationPoint exfil = GetExfilPointFromInteractive(interactive);
 
-                List<ActionsTypesClass> actions = new List<ActionsTypesClass>();
-                actions.AddRange(GetVanillaInteractionActions(owner, interactive));
-                actions.AddRange(GetCustomExfilActions(exfil));
-
-                __result = new ActionsReturnClass { Actions = actions };
+                __result = GetActionsClassWithCustomActions(exfil);
+                __result.Actions.AddRange(GetVanillaInteractionActions(owner, interactive));
 
                 return false;
             }
@@ -68,14 +64,14 @@ namespace InteractableExfilsAPI.Patches
 
         private static bool InteractiveIsCarExtract(object interactive)
         {
-            if (!(interactive is ExfiltrationPoint)) return false;
+            if (interactive is not ExfiltrationPoint) return false;
             if (InteractableExfilsService.ExfilIsCar((ExfiltrationPoint)interactive)) return true;
             return false;
         }
 
         private static bool InteractiveIsElevatorSwitch(object interactive)
         {
-            if (!(interactive is Switch)) return false;
+            if (interactive is not Switch) return false;
             Switch switcheroo = interactive as Switch;
             if (switcheroo.ExfiltrationPoint == null) return false;
             if (!InteractableExfilsService.ExfilIsElevator(switcheroo.ExfiltrationPoint)) return false;
@@ -84,15 +80,13 @@ namespace InteractableExfilsAPI.Patches
 
         private static ExfiltrationPoint GetExfilPointFromInteractive(object interactive)
         {
-            if (interactive is Switch) return ((Switch)interactive).ExfiltrationPoint;
+            if (interactive is Switch @switch) return @switch.ExfiltrationPoint;
             return interactive as ExfiltrationPoint;
         }
 
         private static List<ActionsTypesClass> GetVanillaInteractionActions(GamePlayerOwner gamePlayerOwner, object interactive)
         {
-            object[] args = new object[2];
-            args[0] = gamePlayerOwner;
-            args[1] = interactive;
+            object[] args = [gamePlayerOwner, interactive];
 
             MethodInfo methodInfo = null;
             if (interactive is ExfiltrationPoint)
@@ -105,15 +99,17 @@ namespace InteractableExfilsAPI.Patches
             }
 
             List<ActionsTypesClass> vanillaExfilActions = ((ActionsReturnClass)methodInfo.Invoke(null, args))?.Actions;
-            return vanillaExfilActions ?? new List<ActionsTypesClass>();
+            return vanillaExfilActions ?? [];
         }
 
-        private static List<ActionsTypesClass> GetCustomExfilActions(ExfiltrationPoint exfil)
+        private static ActionsReturnClass GetActionsClassWithCustomActions(ExfiltrationPoint exfil)
         {
-            var player = Singleton<GameWorld>.Instance.MainPlayer;
-            OnActionsAppliedResult eventResult = Singleton<InteractableExfilsService>.Instance.OnActionsApplied(exfil, null, true);
+            bool exfilIsActiveToPlayer = true;
+            var customTrigger = new CustomExfilTrigger();
+            customTrigger.Awake();
+            customTrigger.Init(exfil, exfilIsActiveToPlayer);
 
-            return CustomExfilAction.GetActionsTypesClassList(eventResult.Actions);
+            return customTrigger.CreateExfilPrompt();
         }
     }
 }
