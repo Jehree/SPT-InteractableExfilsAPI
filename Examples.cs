@@ -126,6 +126,13 @@ namespace InteractableExfilsAPI
         public static int Counter = 1;
         public static OnActionsAppliedResult PromptRefreshingExample(ExfiltrationPoint exfil, CustomExfilTrigger customExfilTrigger, bool exfilIsAvailableToPlayer)
         {
+            // reset the counter when the prompt is rendered for the first time
+            // you can remove this if you want to keep the state of the Counter shared between multiple exfils
+            if (InteractableExfilsService.IsFirstRender())
+            {
+                Counter = 1;
+            }
+
             CustomExfilAction increaseCounterAction = new CustomExfilAction(
                 $"Increase Counter: {Counter}",
                 false,
