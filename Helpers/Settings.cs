@@ -13,7 +13,6 @@ namespace InteractableExfilsAPI.Helpers
 
         private static void OnSettingsChanged(object sender, EventArgs e)
         {
-            Plugin.LogSource.LogInfo("BepInEx setting changed, refresh prompt");
             InteractableExfilsService.RefreshPrompt();
         }
 
