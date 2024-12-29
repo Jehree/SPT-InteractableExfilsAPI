@@ -151,5 +151,11 @@ namespace InteractableExfilsAPI
 
             return new OnActionsAppliedResult(actions);
         }
+
+        public static void DisableVanillaAction()
+        {
+            // e.g. disable vanilla action for cars and labs elevator
+            InteractableExfilsService.Instance().DisableVanillaActions = true;
+        }
     }
 }

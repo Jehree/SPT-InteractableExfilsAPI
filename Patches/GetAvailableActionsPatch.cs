@@ -6,6 +6,7 @@ using InteractableExfilsAPI.Components;
 using InteractableExfilsAPI.Singletons;
 using SPT.Reflection.Patching;
 using System.Collections.Generic;
+using System.Data.Odbc;
 using System.Reflection;
 
 namespace InteractableExfilsAPI.Patches
@@ -81,6 +82,11 @@ namespace InteractableExfilsAPI.Patches
 
         private static List<ActionsTypesClass> GetVanillaInteractionActions(GamePlayerOwner gamePlayerOwner, object interactive)
         {
+            if (InteractableExfilsService.Instance().DisableVanillaActions)
+            {
+                return [];
+            }
+
             object[] args = [gamePlayerOwner, interactive];
 
             MethodInfo methodInfo = null;
