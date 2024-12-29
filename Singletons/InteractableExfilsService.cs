@@ -162,7 +162,7 @@ namespace InteractableExfilsAPI.Singletons
         {
             GetSession().PlayerOwner.ClearInteractionState();
 
-            string deprecationMessage = "InteractableExfilsService.RefreshPrompt is deprecated, prefer using InteractableExfilsService.RefreshPrompt";
+            string deprecationMessage = "InteractableExfilsService.RefreshPrompt is deprecated, prefer using CustomExfilTrigger.RefreshPrompt";
             Plugin.LogSource.LogWarning(deprecationMessage);
             ConsoleScreen.LogWarning(deprecationMessage);
             NotificationManagerClass.DisplayMessageNotification(deprecationMessage);
