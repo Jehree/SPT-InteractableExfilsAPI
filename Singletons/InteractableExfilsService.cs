@@ -61,7 +61,10 @@ namespace InteractableExfilsAPI.Singletons
             {
                 foreach (ActionsAppliedEventHandler handler in OnActionsAppliedEvent.GetInvocationList())
                 {
+                    customExfilTrigger.LockedRefreshPrompt = true;
                     OnActionsAppliedResult handlerResult = handler(exfil, customExfilTrigger, exfilIsAvailableToPlayer);
+                    customExfilTrigger.LockedRefreshPrompt = false;
+
                     if (handlerResult == null) continue;
 
                     result.Actions.AddRange(handlerResult.Actions);

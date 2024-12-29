@@ -19,6 +19,9 @@ namespace InteractableExfilsAPI.Components
         public bool RequiresManualActivation { get; set; } = false;
         public bool ExfilIsActiveToPlayer { get; private set; }
 
+        // this is used to forbid the usage of the RefreshPrompt feature in the handler (to avoid infinite loop)
+        internal bool LockedRefreshPrompt { get; set; } = false;
+
         private List<ActionsTypesClass> VanillaBaseActions { get; set; } = [];
         private bool _playerInTriggerArea = false;
 
@@ -174,7 +177,15 @@ namespace InteractableExfilsAPI.Components
 
         public void RefreshPrompt()
         {
-            UpdateExfilPrompt();
+            if (LockedRefreshPrompt)
+            {
+                Plugin.LogSource.LogError("RefreshPrompt cannot be called inside the handler");
+            }
+            else
+            {
+
+                UpdateExfilPrompt();
+            }
         }
     }
 }
