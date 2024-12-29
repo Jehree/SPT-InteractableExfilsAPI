@@ -76,6 +76,11 @@ namespace InteractableExfilsAPI.Singletons
             return Singleton<InteractableExfilsService>.Instance;
         }
 
+        public static bool IsFirstRender()
+        {
+            return GetSession().PlayerOwner.AvailableInteractionState.Value == null;
+        }
+
         public static CustomExfilAction GetDebugAction(ExfiltrationPoint exfil)
         {
             return new CustomExfilAction(
