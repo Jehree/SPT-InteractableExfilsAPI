@@ -19,6 +19,7 @@ namespace InteractableExfilsAPI.Components
 
         internal InteractableExfilsSession()
         {
+            InteractableExfilsService.Instance().ResetLastUsedCustomExfilTrigger();
             FillExfilLists();
             CreateAllCustomExfilTriggers();
             World = Singleton<GameWorld>.Instance;
@@ -28,7 +29,7 @@ namespace InteractableExfilsAPI.Components
 
         public void OnDestroy()
         {
-            // destroy all triggers to avoid end of raid null refs
+            // 1. destroy all triggers to avoid end of raid null refs
             foreach (var trigger in CustomExfilTriggers)
             {
                 if (!trigger.IsNullOrDestroyed())
@@ -37,6 +38,9 @@ namespace InteractableExfilsAPI.Components
                     GameObject.Destroy(trigger.gameObject);
                 }
             }
+
+            // 2. clear the LastUsedCustomExfilTrigger
+            InteractableExfilsService.Instance().ResetLastUsedCustomExfilTrigger();
         }
 
         private void CreateAllCustomExfilTriggers()

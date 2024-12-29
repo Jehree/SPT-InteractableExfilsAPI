@@ -6,8 +6,8 @@ using InteractableExfilsAPI.Components;
 using InteractableExfilsAPI.Singletons;
 using SPT.Reflection.Patching;
 using System.Collections.Generic;
-using System.Data.Odbc;
 using System.Reflection;
+using UnityEngine;
 
 namespace InteractableExfilsAPI.Patches
 {
@@ -105,9 +105,13 @@ namespace InteractableExfilsAPI.Patches
 
         private static CustomExfilTrigger CreateCustomExfilTrigger(ExfiltrationPoint exfil, List<ActionsTypesClass> vanillaActions)
         {
+            // Create a new GameObject to attach the MonoBehaviour
+            GameObject customTriggerObject = new GameObject("CustomExfilTrigger");
+
+            // Add the CustomExfilTrigger component
+            CustomExfilTrigger customTrigger = customTriggerObject.AddComponent<CustomExfilTrigger>();
+
             bool exfilIsActiveToPlayer = true;
-            var customTrigger = new CustomExfilTrigger();
-            customTrigger.Awake();
             customTrigger.Init(exfil, exfilIsActiveToPlayer, vanillaActions);
 
             string message = $"GetActionsClassWithCustomActions called for exfil {exfil.Settings.Name}!\n";

@@ -7,6 +7,7 @@ using InteractableExfilsAPI.Common;
 using InteractableExfilsAPI.Components;
 using InteractableExfilsAPI.Helpers;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 
@@ -22,12 +23,12 @@ namespace InteractableExfilsAPI.Singletons
 
         public OnActionsAppliedResult()
         {
-            Actions = new List<CustomExfilAction>();
+            Actions = [];
         }
 
         public OnActionsAppliedResult(CustomExfilAction action)
         {
-            Actions = new List<CustomExfilAction>();
+            Actions = [];
             if (action != null)
             {
                 Actions.Add(action);
@@ -36,7 +37,7 @@ namespace InteractableExfilsAPI.Singletons
 
         public OnActionsAppliedResult(List<CustomExfilAction> actions)
         {
-            Actions = new List<CustomExfilAction>();
+            Actions = [];
             if (actions.Any())
             {
                 Actions.AddRange(actions);
@@ -51,7 +52,13 @@ namespace InteractableExfilsAPI.Singletons
 
         // other mods can subscribe to this event and optionally pass ActionsTypesClass(es) back to be added to the interactable objects
         public event ActionsAppliedEventHandler OnActionsAppliedEvent;
-        private FieldInfo _exfilPlayersMetAllRequirementsFieldInfo = AccessTools.Field(typeof(ExfiltrationPoint), "_playersMetAllRequirements");
+        private readonly FieldInfo _exfilPlayersMetAllRequirementsFieldInfo = AccessTools.Field(typeof(ExfiltrationPoint), "_playersMetAllRequirements");
+        private CustomExfilTrigger LastUsedCustomExfilTrigger { get; set; }
+
+        internal void ResetLastUsedCustomExfilTrigger()
+        {
+            LastUsedCustomExfilTrigger = null;
+        }
 
         public virtual OnActionsAppliedResult OnActionsApplied(ExfiltrationPoint exfil, CustomExfilTrigger customExfilTrigger, bool exfilIsAvailableToPlayer)
         {
@@ -59,7 +66,9 @@ namespace InteractableExfilsAPI.Singletons
 
             if (OnActionsAppliedEvent != null)
             {
-                foreach (ActionsAppliedEventHandler handler in OnActionsAppliedEvent.GetInvocationList())
+                LastUsedCustomExfilTrigger = customExfilTrigger;
+
+                foreach (ActionsAppliedEventHandler handler in OnActionsAppliedEvent.GetInvocationList().Cast<ActionsAppliedEventHandler>())
                 {
                     customExfilTrigger.LockedRefreshPrompt = true;
                     OnActionsAppliedResult handlerResult = handler(exfil, customExfilTrigger, exfilIsAvailableToPlayer);
@@ -158,18 +167,16 @@ namespace InteractableExfilsAPI.Singletons
             return session;
         }
 
-        /// <summary>
-        /// Deprecated: use CustomExfilTrigger.RefreshPrompt() instead
-        /// </summary>
         public static void RefreshPrompt()
         {
-            GetSession().PlayerOwner.ClearInteractionState();
-
-            string deprecationMessage = "InteractableExfilsService.RefreshPrompt is deprecated, prefer using CustomExfilTrigger.RefreshPrompt";
-            Plugin.LogSource.LogWarning(deprecationMessage);
-            ConsoleScreen.LogWarning(deprecationMessage);
-            NotificationManagerClass.DisplayMessageNotification(deprecationMessage);
-
+            if (Instance().LastUsedCustomExfilTrigger != null)
+            {
+                Instance().LastUsedCustomExfilTrigger.RefreshPrompt();
+            }
+            else
+            {
+                Plugin.LogSource.LogError("Cannot refresh prompt because LastUsedCustomExfilTrigger is not found");
+            }
         }
 
         public static bool ExfilHasRequirement(ExfiltrationPoint exfil, ERequirementState requirement)
@@ -196,7 +203,7 @@ namespace InteractableExfilsAPI.Singletons
 
         public void AddPlayerToPlayersMetAllRequirements(ExfiltrationPoint exfil, string profileId)
         {
-            List<string> playerIdList = this._exfilPlayersMetAllRequirementsFieldInfo.GetValue(exfil) as List<string>;
+            List<string> playerIdList = _exfilPlayersMetAllRequirementsFieldInfo.GetValue(exfil) as List<string>;
             if (playerIdList.Contains(profileId)) return;
             playerIdList.Add(profileId);
             _exfilPlayersMetAllRequirementsFieldInfo.SetValue(exfil, playerIdList);
@@ -207,7 +214,7 @@ namespace InteractableExfilsAPI.Singletons
             if (!Settings.InactiveExtractsDisplayUnavailable.Value) return null;
             if (exfilIsAvailableToPlayer) return null;
 
-            CustomExfilAction customExfilAction = new CustomExfilAction(
+            CustomExfilAction customExfilAction = new(
                 "Extract Unavailable",
                 true,
                 () => { Plugin.LogSource.LogInfo("this won't ever run"); }
