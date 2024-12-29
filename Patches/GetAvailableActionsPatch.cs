@@ -1,18 +1,12 @@
-﻿using Comfort.Common;
-using EFT;
+﻿using EFT;
 using EFT.Interactive;
+using EFT.UI;
 using HarmonyLib;
-using InteractableExfilsAPI.Common;
 using InteractableExfilsAPI.Components;
 using InteractableExfilsAPI.Singletons;
 using SPT.Reflection.Patching;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
 
 namespace InteractableExfilsAPI.Patches
 {
@@ -52,10 +46,11 @@ namespace InteractableExfilsAPI.Patches
             if (isCarExtract || isElevatorSwitch)
             {
                 ExfiltrationPoint exfil = GetExfilPointFromInteractive(interactive);
+                List<ActionsTypesClass> vanillaActions = GetVanillaInteractionActions(owner, interactive);
+                CustomExfilTrigger customTrigger = CreateCustomExfilTrigger(exfil, vanillaActions);
+                ActionsReturnClass prompt = customTrigger.CreateExfilPrompt();
 
-                __result = GetActionsClassWithCustomActions(exfil);
-                __result.Actions.AddRange(GetVanillaInteractionActions(owner, interactive));
-
+                __result = prompt;
                 return false;
             }
 
@@ -102,14 +97,18 @@ namespace InteractableExfilsAPI.Patches
             return vanillaExfilActions ?? [];
         }
 
-        private static ActionsReturnClass GetActionsClassWithCustomActions(ExfiltrationPoint exfil)
+        private static CustomExfilTrigger CreateCustomExfilTrigger(ExfiltrationPoint exfil, List<ActionsTypesClass> vanillaActions)
         {
             bool exfilIsActiveToPlayer = true;
             var customTrigger = new CustomExfilTrigger();
             customTrigger.Awake();
-            customTrigger.Init(exfil, exfilIsActiveToPlayer);
+            customTrigger.Init(exfil, exfilIsActiveToPlayer, vanillaActions);
 
-            return customTrigger.CreateExfilPrompt();
+            string message = $"GetActionsClassWithCustomActions called for exfil {exfil.Settings.Name}!\n";
+            ConsoleScreen.Log(message);
+            Plugin.LogSource.LogInfo(message);
+
+            return customTrigger;
         }
     }
 }

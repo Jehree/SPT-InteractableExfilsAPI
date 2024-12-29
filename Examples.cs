@@ -132,7 +132,7 @@ namespace InteractableExfilsAPI
                 () =>
                 {
                     Counter++;
-                    InteractableExfilsService.RefreshPrompt();
+                    customExfilTrigger.RefreshPrompt();
                 }
             );
             CustomExfilAction decreaseCounterAction = new CustomExfilAction(
@@ -141,7 +141,7 @@ namespace InteractableExfilsAPI
                 () =>
                 {
                     Counter--;
-                    InteractableExfilsService.RefreshPrompt();
+                    customExfilTrigger.RefreshPrompt();
                 }
             );
 

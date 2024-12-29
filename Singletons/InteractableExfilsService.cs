@@ -6,13 +6,9 @@ using HarmonyLib;
 using InteractableExfilsAPI.Common;
 using InteractableExfilsAPI.Components;
 using InteractableExfilsAPI.Helpers;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
 
 namespace InteractableExfilsAPI.Singletons
 {
@@ -55,7 +51,6 @@ namespace InteractableExfilsAPI.Singletons
         // other mods can subscribe to this event and optionally pass ActionsTypesClass(es) back to be added to the interactable objects
         public event ActionsAppliedEventHandler OnActionsAppliedEvent;
         private FieldInfo _exfilPlayersMetAllRequirementsFieldInfo = AccessTools.Field(typeof(ExfiltrationPoint), "_playersMetAllRequirements");
-        internal static CustomExfilTrigger LatestCustomExfilTrigger { get; set; }
 
         public virtual OnActionsAppliedResult OnActionsApplied(ExfiltrationPoint exfil, CustomExfilTrigger customExfilTrigger, bool exfilIsAvailableToPlayer)
         {
@@ -149,19 +144,18 @@ namespace InteractableExfilsAPI.Singletons
             return session;
         }
 
+        /// <summary>
+        /// Deprecated: use CustomExfilTrigger.RefreshPrompt() instead
+        /// </summary>
         public static void RefreshPrompt()
         {
-            if (LatestCustomExfilTrigger != null)
-            {
-                LatestCustomExfilTrigger.UpdateExfilPrompt();
-            }
-            else
-            {
-                GetSession().PlayerOwner.ClearInteractionState();
-                string warnMsg = "InteractableExfilsService.RefreshPrompt called but player interaction state has been cleared";
-                Plugin.LogSource.LogWarning(warnMsg);
-                ConsoleScreen.LogWarning(warnMsg);
-            }
+            GetSession().PlayerOwner.ClearInteractionState();
+
+            string deprecationMessage = "InteractableExfilsService.RefreshPrompt is deprecated, prefer using InteractableExfilsService.RefreshPrompt";
+            Plugin.LogSource.LogWarning(deprecationMessage);
+            ConsoleScreen.LogWarning(deprecationMessage);
+            NotificationManagerClass.DisplayMessageNotification(deprecationMessage);
+
         }
 
         public static bool ExfilHasRequirement(ExfiltrationPoint exfil, ERequirementState requirement)

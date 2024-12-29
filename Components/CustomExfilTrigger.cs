@@ -5,6 +5,7 @@ using EFT.UI;
 using InteractableExfilsAPI.Common;
 using InteractableExfilsAPI.Helpers;
 using InteractableExfilsAPI.Singletons;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -17,6 +18,8 @@ namespace InteractableExfilsAPI.Components
         public bool ExfilEnabled { get; private set; } = true;
         public bool RequiresManualActivation { get; set; } = false;
         public bool ExfilIsActiveToPlayer { get; private set; }
+
+        private List<ActionsTypesClass> VanillaBaseActions { get; set; } = [];
         private bool _playerInTriggerArea = false;
 
         private InteractableExfilsSession _session;
@@ -54,7 +57,6 @@ namespace InteractableExfilsAPI.Components
 
         public void OnTriggerExit(Collider collider)
         {
-            InteractableExfilsService.LatestCustomExfilTrigger = null;
             Player player = Singleton<GameWorld>.Instance.GetPlayerByCollider(collider);
             if (player == _session.MainPlayer)
             {
@@ -64,15 +66,15 @@ namespace InteractableExfilsAPI.Components
             }
         }
 
-        internal void Init(ExfiltrationPoint exfil, bool exfilIsActiveToPlayer)
+        internal void Init(ExfiltrationPoint exfil, bool exfilIsActiveToPlayer, List<ActionsTypesClass> vanillaBaseActions)
         {
             Exfil = exfil;
             ExfilIsActiveToPlayer = exfilIsActiveToPlayer;
+            VanillaBaseActions = vanillaBaseActions;
         }
 
         internal ActionsReturnClass CreateExfilPrompt()
         {
-            InteractableExfilsService.LatestCustomExfilTrigger = this;
             ActionsReturnClass actionsReturn = _session.PlayerOwner.AvailableInteractionState.Value;
 
             var selectedActionIndex = 0;
@@ -86,10 +88,10 @@ namespace InteractableExfilsAPI.Components
             }
 
             OnActionsAppliedResult eventResult = Singleton<InteractableExfilsService>.Instance.OnActionsApplied(Exfil, this, ExfilIsActiveToPlayer);
-            var actions = CustomExfilAction.GetActionsTypesClassList(eventResult.Actions);
-            if (actions.Count == 0) return new ActionsReturnClass { Actions = [] };
 
-            actionsReturn = new ActionsReturnClass { Actions = actions };
+            var actions = VanillaBaseActions.Concat(CustomExfilAction.GetActionsTypesClassList(eventResult.Actions)).ToList();
+
+            var newActionsReturn = new ActionsReturnClass { Actions = actions };
 
             if (selectedActionIndex >= actions.Count)
             {
@@ -97,15 +99,16 @@ namespace InteractableExfilsAPI.Components
             }
 
             var selectedAction = actions[selectedActionIndex];
-            actionsReturn.SelectAction(selectedAction);
+            newActionsReturn.SelectAction(selectedAction);
 
-            return actionsReturn;
+            return newActionsReturn;
         }
 
-        internal void UpdateExfilPrompt()
+        internal ActionsReturnClass UpdateExfilPrompt()
         {
             ActionsReturnClass exfilPrompt = CreateExfilPrompt();
             _session.PlayerOwner.AvailableInteractionState.Value = exfilPrompt;
+            return exfilPrompt;
         }
 
         private void EnableExfilZone()
@@ -167,6 +170,11 @@ namespace InteractableExfilsAPI.Components
                 EnableExfilZone();
                 Singleton<GUISounds>.Instance.PlayUISound(EUISoundType.GeneratorTurnOn);
             }
+        }
+
+        public void RefreshPrompt()
+        {
+            UpdateExfilPrompt();
         }
     }
 }
