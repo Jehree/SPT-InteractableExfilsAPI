@@ -4,16 +4,30 @@ Adds interaction prompts to exfils, letting you toggle the exfil timer on and of
 
 ## API Usage (for modders)
 
-### Create your own custom actions
+### Initial setup in your project
+The only thing you need to do to start development with Interactable Exfils API is to reference the dll in your `.csproj` file: 
+
+```xml
+<ItemGroup>
+    <Reference Include="InteractableExfilsAPI">
+        <HintPath>$(PathToSPT)\BepInEx\plugins\InteractableExfilsAPI.dll</HintPath>
+    </Reference>
+</ItemGroup>
+```
+
+Then you have to create at least one handler and register it with the instance of the `InteractableExfilsService`
+
+### Create your custom handler
 
 ```cs
+// This example will add an enabled static action to every single extract in the game
 public static class Examples
 {
-    // this example will add an enabled static action to every single extract in the game
+    // this static function is an exfil actions handler you can register with the InteractableExfilsService
     public static OnActionsAppliedResult SimpleExample(ExfiltrationPoint exfil, CustomExfilTrigger customExfilTrigger, bool exfilIsAvailableToPlayer)
     {
-        // this part of the code is ran everytime the prompt is created/refreshed
-        // it occurs when:
+        // This part of the code is ran everytime the prompt is created/refreshed
+        // It occurs when:
         // 1. the player enter the exfil zone
         // 2. the player interact with the prompt (i.e. press the "F" key)
         // 3. the player changed a BepInEx config in InteractableExfilsAPI
@@ -27,12 +41,12 @@ public static class Examples
             "Example Interaction",
             isDisabled,
             () => {
-                // this part of the code is ran when the player interact with this prompt item
+                // This part of the code is ran when the player interact with this prompt item
                 NotificationManagerClass.DisplayMessageNotification("Simple Interaction Example Selected!");
             }
         );
 
-        // here you have control over the ordering of the actions
+        // Here you have control over the ordering of the actions
         List<CustomExfilAction> actions = [customExfilAction];
 
         return new OnActionsAppliedResult(actions);
