@@ -49,11 +49,8 @@ namespace InteractableExfilsAPI
             return new OnActionsAppliedResult(customExfilAction);
         }
 
-
-
-        // NOTE: disabled state will only update when an interaction menu first appears, this means if it is updated while the player is inside an exfil area,
-        // they will have to either exit and re-enter it, or look at something else like loot on the ground and then away again to get the interaction menu to refresh.
-        // for these reasons, I recommend only using this when you know that the player cannot be inside the exfil area when the disabled condition is updated.
+        // NOTE: there is a current limitation where a disabled element can still be selected (for example when it's the first action of the list)
+        // the action will never be performed though
         public static OnActionsAppliedResult DynamicDisabledExample(ExfiltrationPoint exfil, CustomExfilTrigger customExfilTrigger, bool exfilIsAvailableToPlayer)
         {
             CustomExfilAction customExfilAction = new CustomExfilAction(
@@ -122,7 +119,7 @@ namespace InteractableExfilsAPI
         }
 
 
-        // counter example
+        // simple counter example
         public static int Counter = 1;
         public static OnActionsAppliedResult PromptRefreshingExample(ExfiltrationPoint exfil, CustomExfilTrigger customExfilTrigger, bool exfilIsAvailableToPlayer)
         {
@@ -157,7 +154,7 @@ namespace InteractableExfilsAPI
 
         public static void DisableVanillaAction()
         {
-            // e.g. disable vanilla action for cars and labs elevator
+            // e.g. disable vanilla action (for cars and labs elevator)
             InteractableExfilsService.Instance().DisableVanillaActions = true;
         }
     }
