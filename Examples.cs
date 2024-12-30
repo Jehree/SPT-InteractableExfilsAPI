@@ -24,8 +24,6 @@ namespace InteractableExfilsAPI
             return new OnActionsAppliedResult(customExfilAction);
         }
 
-
-
         public static OnActionsAppliedResult ScavGate3OnlyExample(ExfiltrationPoint exfil, CustomExfilTrigger customExfilTrigger, bool exfilIsAvailableToPlayer)
         {
             // return null to skip adding an action to certain exfils. In this case, we are only adding the action when the player is a scav.
@@ -50,12 +48,12 @@ namespace InteractableExfilsAPI
         }
 
         // NOTE: there is a current limitation where a disabled element can still be selected (for example when it's the first action of the list)
-        // the action will never be performed though
+        // a disabled action will never be performed though
         public static OnActionsAppliedResult DynamicDisabledExample(ExfiltrationPoint exfil, CustomExfilTrigger customExfilTrigger, bool exfilIsAvailableToPlayer)
         {
             CustomExfilAction customExfilAction = new CustomExfilAction(
                 "I'm only active when Debug Mode is on (hard disable)",
-                () => { return !Settings.DebugMode.Value; }, // passing a function that returns a bool here will allow the action to dynamically update it's disabled state
+                !Settings.DebugMode.Value,
                 () => { NotificationManagerClass.DisplayMessageNotification("Dynamic Disabled Example (hard) Selected!"); }
             );
 
@@ -78,9 +76,6 @@ namespace InteractableExfilsAPI
             return new OnActionsAppliedResult(customExfilAction);
         }
 
-
-
-        // If you need the interaction to update while the player is inside the exfil, consider doing a "soft" disable behavior like below:
         public static OnActionsAppliedResult SoftDynamicDisabledExample(ExfiltrationPoint exfil, CustomExfilTrigger customExfilTrigger, bool exfilIsAvailableToPlayer)
         {
             CustomExfilAction customExfilAction = new CustomExfilAction(
@@ -150,12 +145,6 @@ namespace InteractableExfilsAPI
             List<CustomExfilAction> actions = [increaseCounterAction, decreaseCounterAction];
 
             return new OnActionsAppliedResult(actions);
-        }
-
-        public static void DisableVanillaAction()
-        {
-            // e.g. disable vanilla action (for cars and labs elevator)
-            InteractableExfilsService.Instance().DisableVanillaActions = true;
         }
     }
 }
