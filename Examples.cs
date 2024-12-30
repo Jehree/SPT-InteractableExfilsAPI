@@ -18,7 +18,7 @@ namespace InteractableExfilsAPI
             CustomExfilAction customExfilAction = new CustomExfilAction(
                 "Example Interaction",
                 false,
-                () => { NotificationManagerClass.DisplayMessageNotification("Simple Intercation Example Selected!"); }
+                () => { NotificationManagerClass.DisplayMessageNotification("Simple Interaction Example Selected!"); }
             );
 
             return new OnActionsAppliedResult(customExfilAction);
@@ -43,7 +43,7 @@ namespace InteractableExfilsAPI
             CustomExfilAction customExfilAction = new CustomExfilAction(
                 "Example Scav Only Gate 3 Interaction",
                 false,
-                () => { NotificationManagerClass.DisplayMessageNotification($"Simple Intercation Example Selected by profile: {player.ProfileId}"); }
+                () => { NotificationManagerClass.DisplayMessageNotification($"Simple Interaction Example Selected by profile: {player.ProfileId}"); }
             );
 
             return new OnActionsAppliedResult(customExfilAction);

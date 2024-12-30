@@ -18,7 +18,7 @@ public static class Examples
         CustomExfilAction customExfilAction = new CustomExfilAction(
             "Example Interaction",
             isDisabled,
-            () => { NotificationManagerClass.DisplayMessageNotification("Simple Intercation Example Selected!"); }
+            () => { NotificationManagerClass.DisplayMessageNotification("Simple Interaction Example Selected!"); }
         );
 
         return new OnActionsAppliedResult(customExfilAction);
