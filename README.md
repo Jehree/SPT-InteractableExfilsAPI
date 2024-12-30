@@ -72,3 +72,14 @@ public static void DisableVanillaAction()
     InteractableExfilsService.Instance().DisableVanillaActions = true;
 }
 ```
+
+### Retrieve all active exfils
+
+If you need a list of all the active exfils in raid, you can get it via the `InteractableExfilsSession` component
+
+```cs
+public static List<ExfiltrationPoint> ExampleGetExfils() {
+    InteractableExfilsSession session = InteractableExfilsService.GetSession();
+    return session.ActiveExfils;
+}
+```
