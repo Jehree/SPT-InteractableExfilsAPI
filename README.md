@@ -1,8 +1,8 @@
 # Interactable Exfils API
 
-Adds interaction prompts to exfils, letting you toggle the exfil timer on and off (you can finally loot that body without extracting!) as well as API tools for modders to add their own exfil interaction options.
+The main purpose of this api mod is to expose the ability to conveniently add custom interaction options to the interactable areas that this mod creates.
 
-## API Usage (for modders)
+## API Usage
 
 ### Initial setup in your project
 The only thing you need to do to start development with Interactable Exfils API is to reference the dll in your `.csproj` file: 
