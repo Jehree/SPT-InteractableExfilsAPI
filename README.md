@@ -83,3 +83,8 @@ public static List<ExfiltrationPoint> ExampleGetExfils() {
     return session.ActiveExfils;
 }
 ```
+
+## More examples
+If your mod use Interactable Exfils API, please make a PR here so we can point it as an example.
+
+- used in [PTT.Services.ExfilPromptService](https://github.com/guillaumearm/PathToTarkov/blob/cc5a24140ae3acd9e212b9e73729e42b77780a7d/PTT-Plugin/Services/ExfilPromptService.cs) (for [Path To Tarkov](https://hub.sp-tarkov.com/files/file/569-path-to-tarkov/) mod)
