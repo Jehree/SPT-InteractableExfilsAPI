@@ -4,7 +4,6 @@ Adds interaction prompts to exfils, letting you toggle the exfil timer on and of
 
 ## API Usage (for modders)
 
-
 ### Create your own custom actions
 
 ```cs
@@ -40,6 +39,8 @@ public static class Examples
     }
 }
 ```
+
+Take a look to the [Examples class](./Examples.cs) for more.
 
 ### Register your actions
 
@@ -82,8 +83,7 @@ public static List<ExfiltrationPoint> ExampleGetExfils() {
 }
 ```
 
-## More examples
+## Mods that use Interactable Exfils API
 If your mod use Interactable Exfils API, please make a PR here so we can point it as an example.
 
-- Check the [Examples](./Examples.cs) class of this repository
-- used in [PTT.Services.ExfilPromptService](https://github.com/guillaumearm/PathToTarkov/blob/cc5a24140ae3acd9e212b9e73729e42b77780a7d/PTT-Plugin/Services/ExfilPromptService.cs) (for [Path To Tarkov](https://hub.sp-tarkov.com/files/file/569-path-to-tarkov/) mod)
+- [Path To Tarkov](https://hub.sp-tarkov.com/files/file/569-path-to-tarkov/): used in [PTT.Services.ExfilPromptService](https://github.com/guillaumearm/PathToTarkov/blob/cc5a24140ae3acd9e212b9e73729e42b77780a7d/PTT-Plugin/Services/ExfilPromptService.cs)
