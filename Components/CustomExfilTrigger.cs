@@ -40,21 +40,25 @@ namespace InteractableExfilsAPI.Components
             UpdateExfilPrompt(true);
         }
 
+        private void UpdateExfilZone()
+        {
+            if (RequiresManualActivation)
+            {
+                ForceSetExfilZoneEnabled(false);
+            }
+            else
+            {
+                ForceSetExfilZoneEnabled(Settings.ExtractAreaStartsEnabled.Value);
+            }
+        }
+
         public void OnTriggerEnter(Collider collider)
         {
             Player player = Singleton<GameWorld>.Instance.GetPlayerByCollider(collider);
             if (player == _session.MainPlayer)
             {
                 _playerInTriggerArea = true;
-
-                if (RequiresManualActivation)
-                {
-                    ForceSetExfilZoneEnabled(false);
-                }
-                else
-                {
-                    ForceSetExfilZoneEnabled(Settings.ExtractAreaStartsEnabled.Value);
-                }
+                UpdateExfilZone();
             }
         }
 
@@ -91,6 +95,7 @@ namespace InteractableExfilsAPI.Components
             }
 
             OnActionsAppliedResult eventResult = Singleton<InteractableExfilsService>.Instance.OnActionsApplied(Exfil, this, ExfilIsActiveToPlayer);
+            UpdateExfilZone(); // this is needed after the handler has been applied
 
             var actions = VanillaBaseActions.Concat(CustomExfilAction.GetActionsTypesClassList(eventResult.Actions)).ToList();
 
@@ -116,31 +121,18 @@ namespace InteractableExfilsAPI.Components
             }
         }
 
-        private void EnableExfilZone()
-        {
-            Exfil.gameObject.GetComponent<BoxCollider>().enabled = true;
-            ExfilEnabled = true;
-        }
-
-        private void DisableExfilZone()
-        {
-            Exfil.gameObject.GetComponent<BoxCollider>().enabled = false;
-            ExfilEnabled = false;
-
-        }
 
         /// <summary>
         /// Force enables or disables a zone, does not do any exfil requirement checks.
         /// </summary>
         public void ForceSetExfilZoneEnabled(bool enabled)
         {
-            if (enabled)
+            ExfilEnabled = enabled;
+
+            var collider = Exfil.gameObject?.GetComponent<BoxCollider>();
+            if (collider != null)
             {
-                EnableExfilZone();
-            }
-            else
-            {
-                DisableExfilZone();
+                collider.enabled = enabled;
             }
         }
 
@@ -167,12 +159,12 @@ namespace InteractableExfilsAPI.Components
 
             if (ExfilEnabled)
             {
-                DisableExfilZone();
+                ForceSetExfilZoneEnabled(false);
                 Singleton<GUISounds>.Instance.PlayUISound(EUISoundType.GeneratorTurnOff);
             }
             else
             {
-                EnableExfilZone();
+                ForceSetExfilZoneEnabled(true);
                 Singleton<GUISounds>.Instance.PlayUISound(EUISoundType.GeneratorTurnOn);
             }
         }
