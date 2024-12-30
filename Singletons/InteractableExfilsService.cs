@@ -6,6 +6,7 @@ using HarmonyLib;
 using InteractableExfilsAPI.Common;
 using InteractableExfilsAPI.Components;
 using InteractableExfilsAPI.Helpers;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -60,6 +61,21 @@ namespace InteractableExfilsAPI.Singletons
             LastUsedCustomExfilTrigger = null;
         }
 
+        private static CustomExfilAction WrapCustomExfilAction(CustomExfilAction action)
+        {
+            return new CustomExfilAction(action.GetName, action.GetDisabled, () =>
+            {
+                if (action.GetDisabled())
+                {
+                    // this is a guard because it's still possible to select a disabled action (even if the player can't)
+                    return;
+                }
+
+                action.Action();
+                RefreshPrompt(); // automatic prompt re-rendering when an action is performed by the user
+            });
+        }
+
         public virtual OnActionsAppliedResult OnActionsApplied(ExfiltrationPoint exfil, CustomExfilTrigger customExfilTrigger, bool exfilIsAvailableToPlayer)
         {
             OnActionsAppliedResult result = new OnActionsAppliedResult();
@@ -76,7 +92,8 @@ namespace InteractableExfilsAPI.Singletons
 
                     if (handlerResult == null) continue;
 
-                    result.Actions.AddRange(handlerResult.Actions);
+                    List<CustomExfilAction> decoratedActions = handlerResult.Actions.Select(WrapCustomExfilAction).ToList();
+                    result.Actions.AddRange(decoratedActions);
                 }
             }
 
