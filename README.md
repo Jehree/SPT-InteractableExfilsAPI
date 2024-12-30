@@ -41,8 +41,6 @@ public static class Examples
 }
 ```
 
-Check the [Examples](./Examples.cs) class to see more examples
-
 ### Register your actions
 
 You can do this whenever you want but the recommended way for doing it as early as possible is in the `Start()` method of your plugin class
@@ -87,4 +85,5 @@ public static List<ExfiltrationPoint> ExampleGetExfils() {
 ## More examples
 If your mod use Interactable Exfils API, please make a PR here so we can point it as an example.
 
+- Check the [Examples](./Examples.cs) class of this repository
 - used in [PTT.Services.ExfilPromptService](https://github.com/guillaumearm/PathToTarkov/blob/cc5a24140ae3acd9e212b9e73729e42b77780a7d/PTT-Plugin/Services/ExfilPromptService.cs) (for [Path To Tarkov](https://hub.sp-tarkov.com/files/file/569-path-to-tarkov/) mod)
