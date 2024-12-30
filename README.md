@@ -30,16 +30,19 @@ Check the [Examples](./Examples.cs) class to see more examples
 
 ### 2. register your actions with the InteractableExfilsService
 
-You can retrieve the `InteractableExfilsService` in the `Start` method of your `BaseUnityPlugin`
-
 ```cs
-InteractableExfilsService exfilsService = InteractableExfilsService.Instance();
-```
+public class Plugin : BaseUnityPlugin {
+    private void Awake() {
+        // enable your patches here
+    }
+    private void Start() {
+        // retrieve the interactable exfil singleton service
+        InteractableExfilsService ieService = InteractableExfilsService.Instance();
 
-and use it to register your own actions: 
-
-```cs
-exfilsService.OnActionsAppliedEvent += Examples.SimpleExample;
+        // register SimpleExample handler
+        ieService.OnActionsAppliedEvent += Examples.SimpleExample;
+    }
+}
 ```
 
 
