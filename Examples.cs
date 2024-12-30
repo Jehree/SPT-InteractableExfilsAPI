@@ -122,7 +122,7 @@ namespace InteractableExfilsAPI
         }
 
 
-        // prompt refreshing example
+        // counter example
         public static int Counter = 1;
         public static OnActionsAppliedResult PromptRefreshingExample(ExfiltrationPoint exfil, CustomExfilTrigger customExfilTrigger, bool exfilIsAvailableToPlayer)
         {
@@ -139,7 +139,6 @@ namespace InteractableExfilsAPI
                 () =>
                 {
                     Counter++;
-                    customExfilTrigger.RefreshPrompt();
                 }
             );
             CustomExfilAction decreaseCounterAction = new CustomExfilAction(
@@ -148,13 +147,10 @@ namespace InteractableExfilsAPI
                 () =>
                 {
                     Counter--;
-                    customExfilTrigger.RefreshPrompt();
                 }
             );
 
-            List<CustomExfilAction> actions = new List<CustomExfilAction>();
-            actions.Add(increaseCounterAction);
-            actions.Add(decreaseCounterAction);
+            List<CustomExfilAction> actions = [increaseCounterAction, decreaseCounterAction];
 
             return new OnActionsAppliedResult(actions);
         }
