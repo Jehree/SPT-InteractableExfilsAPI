@@ -107,7 +107,13 @@ namespace InteractableExfilsAPI.Singletons
 
         public static bool IsFirstRender()
         {
-            return GetSession().PlayerOwner.AvailableInteractionState.Value == null;
+            var session = GetSession();
+            if (session == null)
+            {
+                return false;
+            }
+
+            return session.PlayerOwner.AvailableInteractionState.Value == null;
         }
 
         public static CustomExfilAction GetDebugAction(ExfiltrationPoint exfil)
@@ -194,6 +200,17 @@ namespace InteractableExfilsAPI.Singletons
             {
                 Plugin.LogSource.LogError("Cannot refresh prompt because LastUsedCustomExfilTrigger is not found");
             }
+        }
+
+        public static BindableState<ActionsReturnClass> GetAvailableInteractionState()
+        {
+            var session = GetSession();
+            if (session == null)
+            {
+                return null;
+            }
+
+            return session.PlayerOwner.AvailableInteractionState;
         }
 
         public static bool ExfilHasRequirement(ExfiltrationPoint exfil, ERequirementState requirement)
