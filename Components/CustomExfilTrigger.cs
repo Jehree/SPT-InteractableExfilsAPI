@@ -40,25 +40,21 @@ namespace InteractableExfilsAPI.Components
             UpdateExfilPrompt(true);
         }
 
-        private void UpdateExfilZone()
-        {
-            if (RequiresManualActivation)
-            {
-                ForceSetExfilZoneEnabled(false);
-            }
-            else
-            {
-                ForceSetExfilZoneEnabled(Settings.ExtractAreaStartsEnabled.Value);
-            }
-        }
-
         public void OnTriggerEnter(Collider collider)
         {
             Player player = Singleton<GameWorld>.Instance.GetPlayerByCollider(collider);
             if (player == _session.MainPlayer)
             {
                 _playerInTriggerArea = true;
-                UpdateExfilZone();
+
+                if (RequiresManualActivation)
+                {
+                    ForceSetExfilZoneEnabled(false);
+                }
+                else
+                {
+                    ForceSetExfilZoneEnabled(Settings.ExtractAreaStartsEnabled.Value);
+                }
             }
         }
 
@@ -95,7 +91,10 @@ namespace InteractableExfilsAPI.Components
             }
 
             OnActionsAppliedResult eventResult = Singleton<InteractableExfilsService>.Instance.OnActionsApplied(Exfil, this, ExfilIsActiveToPlayer);
-            UpdateExfilZone(); // this is needed after the handler has been applied
+            if (RequiresManualActivation) // this is needed to be checked after the handler has been applied since the handled can modify this prop
+            {
+                ForceSetExfilZoneEnabled(false);
+            }
 
             var actions = VanillaBaseActions.Concat(CustomExfilAction.GetActionsTypesClassList(eventResult.Actions)).ToList();
 
