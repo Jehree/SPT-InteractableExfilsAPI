@@ -160,8 +160,12 @@ namespace InteractableExfilsAPI.Singletons
 
         public static CustomExfilAction GetExfilToggleAction(CustomExfilTrigger customExfilTrigger)
         {
+            string customActionName = customExfilTrigger.ExfilEnabled
+              ? "Cancel".Localized()
+              : "Extraction point".Localized();
+
             return new CustomExfilAction(
-                "Extraction point".Localized(),
+                customActionName,
                 false,
                 customExfilTrigger.ToggleExfilZoneEnabled
             );
