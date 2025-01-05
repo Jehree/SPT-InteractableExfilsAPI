@@ -8,7 +8,6 @@ using InteractableExfilsAPI.Components;
 using InteractableExfilsAPI.Helpers;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 
@@ -20,29 +19,45 @@ namespace InteractableExfilsAPI.Singletons
     /// </summary>
     public class OnActionsAppliedResult
     {
-        public List<CustomExfilAction> Actions { get; private set; }
+        public List<CustomExfilAction> Actions { get; private set; } = [];
+        public Action OnExitZone { get; set; } = () => { };
 
         public OnActionsAppliedResult()
         {
-            Actions = [];
         }
 
         public OnActionsAppliedResult(CustomExfilAction action)
         {
-            Actions = [];
             if (action != null)
             {
-                Actions.Add(action);
+                Actions = [action];
             }
         }
 
         public OnActionsAppliedResult(List<CustomExfilAction> actions)
         {
-            Actions = [];
-            if (actions.Any())
+            Actions = actions;
+        }
+
+        public OnActionsAppliedResult(Action onExitZone)
+        {
+            OnExitZone = onExitZone;
+        }
+
+        public OnActionsAppliedResult(CustomExfilAction action, Action onExitZone)
+        {
+            if (action != null)
             {
-                Actions.AddRange(actions);
+                Actions = [action];
             }
+
+            OnExitZone = onExitZone;
+        }
+
+        public OnActionsAppliedResult(List<CustomExfilAction> actions, Action onExitZone)
+        {
+            Actions = actions;
+            OnExitZone = onExitZone;
         }
     }
 
@@ -80,6 +95,8 @@ namespace InteractableExfilsAPI.Singletons
         {
             OnActionsAppliedResult result = new OnActionsAppliedResult();
 
+            List<Action> onExitZoneActions = [];
+
             if (OnActionsAppliedEvent != null)
             {
                 LastUsedCustomExfilTrigger = customExfilTrigger;
@@ -94,8 +111,18 @@ namespace InteractableExfilsAPI.Singletons
 
                     List<CustomExfilAction> decoratedActions = handlerResult.Actions.Select(WrapCustomExfilAction).ToList();
                     result.Actions.AddRange(decoratedActions);
+
+                    if (handlerResult.OnExitZone != null)
+                    {
+                        onExitZoneActions.Add(handlerResult.OnExitZone);
+                    }
                 }
             }
+
+            result.OnExitZone = () =>
+            {
+                onExitZoneActions.ForEach(h => h());
+            };
 
             return result;
         }

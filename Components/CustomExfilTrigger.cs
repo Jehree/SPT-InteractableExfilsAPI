@@ -5,6 +5,7 @@ using EFT.UI;
 using InteractableExfilsAPI.Common;
 using InteractableExfilsAPI.Helpers;
 using InteractableExfilsAPI.Singletons;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -18,6 +19,7 @@ namespace InteractableExfilsAPI.Components
         public bool ExfilEnabled { get; private set; } = true;
         public bool RequiresManualActivation { get; set; } = false;
         public bool ExfilIsActiveToPlayer { get; private set; }
+        private Action OnExitZone { get; set; } = () => { };
 
         // this is used to forbid the usage of the RefreshPrompt feature in the handler (to avoid infinite loop)
         internal bool LockedRefreshPrompt { get; set; } = false;
@@ -66,6 +68,7 @@ namespace InteractableExfilsAPI.Components
                 _playerInTriggerArea = false;
                 _session.PlayerOwner.ClearInteractionState();
                 ForceSetExfilZoneEnabled(true);
+                OnExitZone();
             }
         }
 
@@ -94,6 +97,11 @@ namespace InteractableExfilsAPI.Components
             if (RequiresManualActivation) // this is needed to be checked after the handler has been applied since the handled can modify this prop
             {
                 ForceSetExfilZoneEnabled(false);
+            }
+
+            if (eventResult.OnExitZone != null)
+            {
+                OnExitZone = eventResult.OnExitZone;
             }
 
             var actions = VanillaBaseActions.Concat(CustomExfilAction.GetActionsTypesClassList(eventResult.Actions)).ToList();
