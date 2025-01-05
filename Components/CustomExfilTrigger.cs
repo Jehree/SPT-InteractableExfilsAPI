@@ -67,6 +67,7 @@ namespace InteractableExfilsAPI.Components
             {
                 _playerInTriggerArea = false;
                 _session.PlayerOwner.ClearInteractionState();
+                InteractableExfilsService.Instance().ResetLastUsedCustomExfilTrigger();
                 ForceSetExfilZoneEnabled(true);
                 OnExitZone();
             }
