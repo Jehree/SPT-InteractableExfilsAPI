@@ -8,7 +8,7 @@ using System.Reflection;
 
 namespace InteractableExfilsAPI
 {
-    [BepInPlugin("Jehree.InteractableExfilsAPI", "InteractableExfilsAPI", "1.4.1")]
+    [BepInPlugin("Jehree.InteractableExfilsAPI", "InteractableExfilsAPI", "1.5.0")]
     public class Plugin : BaseUnityPlugin
     {
         public static ManualLogSource LogSource;
