@@ -88,7 +88,7 @@ namespace InteractableExfilsAPI.Components
             if (actionsReturn != null)
             {
                 selectedActionIndex = actionsReturn.Actions.IndexOf(actionsReturn.SelectedAction);
-                if (selectedActionIndex == -1)
+                if (selectedActionIndex < 0)
                 {
                     selectedActionIndex = 0;
                 }
@@ -108,10 +108,16 @@ namespace InteractableExfilsAPI.Components
             var actions = VanillaBaseActions.Concat(CustomExfilAction.GetActionsTypesClassList(eventResult.Actions)).ToList();
 
             var newActionsReturn = new ActionsReturnClass { Actions = actions };
+            int nbActions = actions.Count;
 
-            if (selectedActionIndex >= actions.Count)
+            if (nbActions == 0)
             {
-                selectedActionIndex = actions.Count - 1;
+                return newActionsReturn;
+            }
+
+            if (selectedActionIndex >= nbActions)
+            {
+                selectedActionIndex = nbActions - 1;
             }
 
             var selectedAction = actions[selectedActionIndex];
