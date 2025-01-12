@@ -262,7 +262,15 @@ namespace InteractableExfilsAPI.Singletons
 
         public static bool ExfilIsCar(ExfiltrationPoint exfil)
         {
-            if (ExfilHasRequirement(exfil, ERequirementState.TransferItem)) return true;
+            // exfils with TransferItem requirement and shared timer is considered as car exfil
+
+            if (
+                ExfilHasRequirement(exfil, ERequirementState.TransferItem) &&
+                exfil.Settings.ExfiltrationType == EExfiltrationType.SharedTimer
+            )
+            {
+                return true;
+            }
             return false;
         }
 
@@ -291,6 +299,11 @@ namespace InteractableExfilsAPI.Singletons
         public OnActionsAppliedResult ApplyExtractToggleAction(ExfiltrationPoint exfil, CustomExfilTrigger customExfilTrigger, bool exfilIsAvailableToPlayer)
         {
             if (!exfilIsAvailableToPlayer) return null;
+
+            if (customExfilTrigger.ExfilEnabled && ExfilIsCar(exfil))
+            {
+                return null;
+            }
 
             CustomExfilAction customExfilAction = GetExfilToggleAction(customExfilTrigger);
 
