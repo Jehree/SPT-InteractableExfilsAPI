@@ -253,8 +253,7 @@ namespace InteractableExfilsAPI.Singletons
             return false;
         }
 
-        // Check if an exfil is already interactable (vanilla behaviour)
-        public static bool ExfilIsInteractable(ExfiltrationPoint exfil)
+        public static bool ExfilIsLabElevator(ExfiltrationPoint exfil)
         {
             GameWorld gameWorld = Singleton<GameWorld>.Instance;
             if (gameWorld.LocationId == "laboratory" && exfil.Settings.Name.Contains("Elevator"))
@@ -262,6 +261,12 @@ namespace InteractableExfilsAPI.Singletons
                 return true;
             }
 
+            return false;
+        }
+
+        public static bool ExfilIsInterchangeSafeRoom(ExfiltrationPoint exfil)
+        {
+            GameWorld gameWorld = Singleton<GameWorld>.Instance;
             if (gameWorld.LocationId.ToLower() == "interchange" && exfil.Settings.Name == "Saferoom Exfil")
             {
                 return true;
