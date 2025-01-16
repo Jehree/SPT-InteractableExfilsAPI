@@ -16,18 +16,7 @@ namespace InteractableExfilsAPI.Components
         public Player MainPlayer { get; private set; }
         public GamePlayerOwner PlayerOwner { get; private set; }
 
-
-        internal InteractableExfilsSession()
-        {
-            InteractableExfilsService.Instance().ResetLastUsedCustomExfilTrigger();
-            FillExfilLists();
-            CreateAllCustomExfilTriggers();
-            World = Singleton<GameWorld>.Instance;
-            MainPlayer = World.MainPlayer;
-            PlayerOwner = MainPlayer.gameObject.GetComponent<GamePlayerOwner>();
-        }
-
-        public void OnDestroy()
+        protected void OnDestroy()
         {
             // 1. destroy all triggers to avoid end of raid null refs
             foreach (var trigger in CustomExfilTriggers)
@@ -41,6 +30,16 @@ namespace InteractableExfilsAPI.Components
 
             // 2. clear the LastUsedCustomExfilTrigger
             InteractableExfilsService.Instance().ResetLastUsedCustomExfilTrigger();
+        }
+
+        internal InteractableExfilsSession()
+        {
+            InteractableExfilsService.Instance().ResetLastUsedCustomExfilTrigger();
+            FillExfilLists();
+            CreateAllCustomExfilTriggers();
+            World = Singleton<GameWorld>.Instance;
+            MainPlayer = World.MainPlayer;
+            PlayerOwner = MainPlayer.gameObject.GetComponent<GamePlayerOwner>();
         }
 
         private void CreateAllCustomExfilTriggers()
