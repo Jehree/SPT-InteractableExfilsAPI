@@ -289,6 +289,16 @@ namespace InteractableExfilsAPI.Singletons
             return false;
         }
 
+        // A special exfil is an exfil that don't need any custom exfil trigger
+        public static bool IsSpecialExfil(ExfiltrationPoint exfil)
+        {
+            if (ExfilIsCar(exfil)) return true;
+            if (ExfilIsLabElevator(exfil)) return true;
+            if (ExfilIsInterchangeSafeRoom(exfil)) return true;
+
+            return false;
+        }
+
         public void AddPlayerToPlayersMetAllRequirements(ExfiltrationPoint exfil, string profileId)
         {
             List<string> playerIdList = _exfilPlayersMetAllRequirementsFieldInfo.GetValue(exfil) as List<string>;
@@ -315,7 +325,7 @@ namespace InteractableExfilsAPI.Singletons
         {
             if (!exfilIsAvailableToPlayer) return null;
 
-            if (customExfilTrigger.ExfilEnabled && ExfilIsCar(exfil))
+            if (customExfilTrigger.ExfilEnabled && IsSpecialExfil(exfil))
             {
                 return null;
             }
