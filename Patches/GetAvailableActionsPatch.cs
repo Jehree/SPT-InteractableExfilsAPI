@@ -67,30 +67,14 @@ namespace InteractableExfilsAPI.Patches
             // 1. check for car exfils
             if (interactive is ExfiltrationPoint point)
             {
-                return InteractableExfilsService.ExfilIsShared(point);
+                return InteractableExfilsService.IsExfilShared(point);
             }
 
             // 2. check for other exfils (based on a switch)
             if (interactive is Switch @switch)
             {
-                if (@switch == null || @switch.ExfiltrationPoint == null)
-                {
-                    return false;
-                }
-
-                if (InteractableExfilsService.ExfilIsLabElevator(@switch.ExfiltrationPoint))
-                {
-                    return true;
-                }
-
-                if (InteractableExfilsService.ExfilIsInterchangeSafeRoom(@switch.ExfiltrationPoint))
-                {
-                    // This is to avoid override intermediate switches (like the interchange power switch for example)
-                    if (@switch.NextSwitches != null && @switch.NextSwitches.Length <= 1)
-                    {
-                        return true;
-                    }
-                }
+                if (InteractableExfilsService.IsExfilSwitchLabElevator(@switch)) return true;
+                if (InteractableExfilsService.IsExfilSwitchInterchangeSafeRoom(@switch)) return true;
             }
 
             return false;
