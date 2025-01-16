@@ -273,10 +273,6 @@ namespace InteractableExfilsAPI.Singletons
         private static bool IsExfilInterchangeSafeRoom(ExfiltrationPoint exfil)
         {
             GameWorld gameWorld = Singleton<GameWorld>.Instance;
-
-            // TODO: remove this line!
-            Plugin.LogSource.LogInfo($"Debug gameWorld.LocationId = {gameWorld.LocationId}");
-
             return gameWorld.LocationId.ToLower() == "interchange" && exfil.Settings.Name == "Saferoom Exfil";
         }
 
