@@ -127,11 +127,20 @@ namespace InteractableExfilsAPI.Singletons
             return result;
         }
 
+        /// <summary>
+        /// Retrieve the current InteractableExfilsService
+        /// </summary>
+        /// <returns></returns>
         public static InteractableExfilsService Instance()
         {
             return Singleton<InteractableExfilsService>.Instance;
         }
 
+        /// <summary>
+        /// Check if it's the first render for the given prompt.
+        /// This is useful in order to initialize a state when the prompt is displayed for the first time
+        /// </summary>
+        /// <returns></returns>
         public static bool IsFirstRender()
         {
             var session = GetSession();
@@ -143,7 +152,7 @@ namespace InteractableExfilsAPI.Singletons
             return session.PlayerOwner.AvailableInteractionState.Value == null;
         }
 
-        public static CustomExfilAction GetDebugAction(ExfiltrationPoint exfil)
+        private static CustomExfilAction GetDebugAction(ExfiltrationPoint exfil)
         {
             return new CustomExfilAction(
                 "Print Debug Info To Console",
@@ -185,7 +194,7 @@ namespace InteractableExfilsAPI.Singletons
             );
         }
 
-        public static CustomExfilAction GetExfilToggleAction(CustomExfilTrigger customExfilTrigger)
+        private static CustomExfilAction GetExfilToggleAction(CustomExfilTrigger customExfilTrigger)
         {
             string customActionName = customExfilTrigger.ExfilEnabled
               ? "Cancel".Localized()
@@ -198,6 +207,10 @@ namespace InteractableExfilsAPI.Singletons
             );
         }
 
+        /// <summary>
+        /// Retrieve the current session
+        /// </summary>
+        /// <returns></returns>
         public static InteractableExfilsSession GetSession()
         {
             if (!Singleton<GameWorld>.Instantiated)
@@ -221,6 +234,9 @@ namespace InteractableExfilsAPI.Singletons
             return session;
         }
 
+        /// <summary>
+        /// Refresh the current prompt if available (if not, you'll see a warning in logs)
+        /// </summary>
         public static void RefreshPrompt()
         {
             if (Instance().LastUsedCustomExfilTrigger != null)
@@ -229,10 +245,14 @@ namespace InteractableExfilsAPI.Singletons
             }
             else
             {
-                Plugin.LogSource.LogError("Cannot refresh prompt because LastUsedCustomExfilTrigger is not found");
+                Plugin.LogSource.LogWarning("Cannot refresh prompt because LastUsedCustomExfilTrigger is not found");
             }
         }
 
+        /// <summary>
+        /// Get the current prompt state for current player
+        /// </summary>
+        /// <returns></returns>
         public static BindableState<ActionsReturnClass> GetAvailableInteractionState()
         {
             var session = GetSession();
@@ -244,17 +264,17 @@ namespace InteractableExfilsAPI.Singletons
             return session.PlayerOwner.AvailableInteractionState;
         }
 
-        internal static bool IsExfilLabElevator(ExfiltrationPoint exfil)
+        private static bool IsExfilLabElevator(ExfiltrationPoint exfil)
         {
             GameWorld gameWorld = Singleton<GameWorld>.Instance;
             return gameWorld.LocationId == "laboratory" && exfil.Settings.Name.Contains("Elevator");
         }
 
-        internal static bool IsExfilInterchangeSafeRoom(ExfiltrationPoint exfil)
+        private static bool IsExfilInterchangeSafeRoom(ExfiltrationPoint exfil)
         {
             GameWorld gameWorld = Singleton<GameWorld>.Instance;
 
-            // TODO: remove this line
+            // TODO: remove this line!
             Plugin.LogSource.LogInfo($"Debug gameWorld.LocationId = {gameWorld.LocationId}");
 
             return gameWorld.LocationId.ToLower() == "interchange" && exfil.Settings.Name == "Saferoom Exfil";
@@ -309,6 +329,13 @@ namespace InteractableExfilsAPI.Singletons
             _exfilPlayersMetAllRequirementsFieldInfo.SetValue(exfil, playerIdList);
         }
 
+        /// <summary>
+        /// Handler for unavailable extracts
+        /// </summary>
+        /// <param name="exfil"></param>
+        /// <param name="customExfilTrigger"></param>
+        /// <param name="exfilIsAvailableToPlayer"></param>
+        /// <returns></returns>
         public OnActionsAppliedResult ApplyUnavailableExtractAction(ExfiltrationPoint exfil, CustomExfilTrigger customExfilTrigger, bool exfilIsAvailableToPlayer)
         {
             if (!Settings.InactiveExtractsDisplayUnavailable.Value) return null;
@@ -317,12 +344,19 @@ namespace InteractableExfilsAPI.Singletons
             CustomExfilAction customExfilAction = new(
                 "Extract Unavailable",
                 true,
-                () => { Plugin.LogSource.LogInfo("this won't ever run"); }
+                () => { Plugin.LogSource.LogWarning("\"Extract Unavailable\" internal action has been called, this should never happens. (please report an issue if you see this message in your Player.log)"); }
             );
 
             return new OnActionsAppliedResult(customExfilAction);
         }
 
+        /// <summary>
+        /// Handler for default toggle prompt action
+        /// </summary>
+        /// <param name="exfil"></param>
+        /// <param name="customExfilTrigger"></param>
+        /// <param name="exfilIsAvailableToPlayer"></param>
+        /// <returns></returns>
         public OnActionsAppliedResult ApplyExtractToggleAction(ExfiltrationPoint exfil, CustomExfilTrigger customExfilTrigger, bool exfilIsAvailableToPlayer)
         {
             if (!exfilIsAvailableToPlayer) return null;
@@ -337,6 +371,13 @@ namespace InteractableExfilsAPI.Singletons
             return new OnActionsAppliedResult(customExfilAction);
         }
 
+        /// <summary>
+        /// Handler for debug prompt action
+        /// </summary>
+        /// <param name="exfil"></param>
+        /// <param name="customExfilTrigger"></param>
+        /// <param name="exfilIsAvailableToPlayer"></param>
+        /// <returns></returns>
         public OnActionsAppliedResult ApplyDebugAction(ExfiltrationPoint exfil, CustomExfilTrigger customExfilTrigger, bool exfilIsAvailableToPlayer)
         {
             if (!Settings.DebugMode.Value) return null;
