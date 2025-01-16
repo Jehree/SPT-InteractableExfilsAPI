@@ -218,8 +218,18 @@ namespace InteractableExfilsAPI.Singletons
         {
             if (!exfilIsAvailableToPlayer) return null;
 
+            // special exfils cannot be cancelled
             if (customExfilTrigger.ExfilEnabled && IsSpecialExfil(exfil))
             {
+                return null;
+            }
+
+            if (IsExfilTrain(exfil))
+            {
+                // Ensure the train exfil zone is enabled regarding of user setting
+                customExfilTrigger.ForceSetExfilZoneEnabled(true);
+
+                // Train exfils should not have any interactable exfils prompt
                 return null;
             }
 
@@ -277,6 +287,8 @@ namespace InteractableExfilsAPI.Singletons
 
         // An exfil is considered as special when we don't want to create any custom exfil zone for those exits.
         // We want to let the game handle the default behaviour, so in addition the user should not be able to cancel the extract here.
+        //
+        // Warning: Trains should not considered as a special exfils since it doesn't have a prompt
         //
         // - Shared exfils (mostly used for car extracts, but we assume that all exfils with a shared timer should be uncancellable)
         // - Laboratory elevator
@@ -364,6 +376,12 @@ namespace InteractableExfilsAPI.Singletons
         {
             GameWorld gameWorld = Singleton<GameWorld>.Instance;
             return gameWorld.LocationId == "laboratory" && exfil.Settings.Name.Contains("Elevator");
+        }
+
+        private static bool IsExfilTrain(ExfiltrationPoint exfil)
+        {
+            // will work for both reserve and lighthouse train exfils
+            return exfil.Settings.Name == "EXFIL_Train";
         }
 
         private static bool IsExfilInterchangeSafeRoom(ExfiltrationPoint exfil)
