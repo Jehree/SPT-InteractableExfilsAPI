@@ -14,7 +14,7 @@ namespace InteractableExfilsAPI.Patches
         }
 
         [PatchPrefix]
-        public static bool PatchPrefix()
+        protected static bool PatchPrefix()
         {
             Player player = Singleton<GameWorld>.Instance.MainPlayer;
             player.gameObject.AddComponent<InteractableExfilsSession>();

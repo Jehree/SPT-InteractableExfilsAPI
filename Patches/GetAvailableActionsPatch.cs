@@ -36,7 +36,7 @@ namespace InteractableExfilsAPI.Patches
         }
 
         [PatchPrefix]
-        public static bool PatchPrefix(object[] __args, ref ActionsReturnClass __result)
+        protected static bool PatchPrefix(object[] __args, ref ActionsReturnClass __result)
         {
             var owner = __args[0] as GamePlayerOwner;
             var interactive = __args[1]; // as GInterface139 as of SPT 3.10.3
