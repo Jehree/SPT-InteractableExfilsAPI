@@ -31,12 +31,12 @@ namespace InteractableExfilsAPI.Components
 
         private InteractableExfilsSession _session;
 
-        public void Awake()
+        protected void Awake()
         {
             _session = InteractableExfilsService.GetSession();
         }
 
-        public void Update()
+        protected void Update()
         {
             if (!_playerInTriggerArea) return;
             if (_session.PlayerOwner.AvailableInteractionState.Value != null) return;
@@ -72,6 +72,61 @@ namespace InteractableExfilsAPI.Components
                 InteractableExfilsService.Instance().ResetLastUsedCustomExfilTrigger();
                 ForceSetExfilZoneEnabled(true);
                 OnExitZone();
+            }
+        }
+
+        /// <summary>
+        /// Force enables or disables a zone, does not do any exfil requirement checks.
+        /// </summary>
+        public void ForceSetExfilZoneEnabled(bool enabled)
+        {
+            ExfilEnabled = enabled;
+
+            var collider = Exfil.gameObject?.GetComponent<BoxCollider>();
+            if (collider != null)
+            {
+                collider.enabled = enabled;
+            }
+        }
+
+        /// <summary>
+        /// Toggles exfil zone enabled normally. Does exfil requirement checks and gives the player tips on missing requirements if they are not met.
+        /// </summary>
+        public void ToggleExfilZoneEnabled()
+        {
+            RefreshPlayerMetRequirements();
+
+            if (Exfil.HasRequirements && !Exfil.HasMetRequirements(_session.MainPlayer.ProfileId))
+            {
+                string tips = string.Join(", ", Exfil.GetTips(_session.MainPlayer.ProfileId));
+                ConsoleScreen.Log($"You have not met the extract requirements for {Exfil.Settings.Name}!");
+                NotificationManagerClass.DisplayWarningNotification($"{tips}");
+                Singleton<GUISounds>.Instance.PlayUISound(EUISoundType.ErrorMessage);
+                return;
+            }
+
+            if (ExfilEnabled)
+            {
+                ForceSetExfilZoneEnabled(false);
+                Singleton<GUISounds>.Instance.PlayUISound(EUISoundType.GeneratorTurnOff);
+            }
+            else
+            {
+                ForceSetExfilZoneEnabled(true);
+                Singleton<GUISounds>.Instance.PlayUISound(EUISoundType.GeneratorTurnOn);
+            }
+        }
+
+        public void RefreshPrompt()
+        {
+            if (LockedRefreshPrompt)
+            {
+                Plugin.LogSource.LogError("RefreshPrompt cannot be called inside the handler");
+            }
+            else
+            {
+
+                UpdateExfilPrompt(false);
             }
         }
 
@@ -138,20 +193,6 @@ namespace InteractableExfilsAPI.Components
         }
 
 
-        /// <summary>
-        /// Force enables or disables a zone, does not do any exfil requirement checks.
-        /// </summary>
-        public void ForceSetExfilZoneEnabled(bool enabled)
-        {
-            ExfilEnabled = enabled;
-
-            var collider = Exfil.gameObject?.GetComponent<BoxCollider>();
-            if (collider != null)
-            {
-                collider.enabled = enabled;
-            }
-        }
-
         private void RefreshPlayerMetRequirements()
         {
             Player player = _session.MainPlayer;
@@ -170,45 +211,5 @@ namespace InteractableExfilsAPI.Components
             }
         }
 
-        /// <summary>
-        /// Toggles exfil zone enabled normally. Does exfil requirement checks and gives the player tips on missing requirements if they are not met.
-        /// </summary>
-        public void ToggleExfilZoneEnabled()
-        {
-            RefreshPlayerMetRequirements();
-
-            if (Exfil.HasRequirements && !Exfil.HasMetRequirements(_session.MainPlayer.ProfileId))
-            {
-                string tips = string.Join(", ", Exfil.GetTips(_session.MainPlayer.ProfileId));
-                ConsoleScreen.Log($"You have not met the extract requirements for {Exfil.Settings.Name}!");
-                NotificationManagerClass.DisplayWarningNotification($"{tips}");
-                Singleton<GUISounds>.Instance.PlayUISound(EUISoundType.ErrorMessage);
-                return;
-            }
-
-            if (ExfilEnabled)
-            {
-                ForceSetExfilZoneEnabled(false);
-                Singleton<GUISounds>.Instance.PlayUISound(EUISoundType.GeneratorTurnOff);
-            }
-            else
-            {
-                ForceSetExfilZoneEnabled(true);
-                Singleton<GUISounds>.Instance.PlayUISound(EUISoundType.GeneratorTurnOn);
-            }
-        }
-
-        public void RefreshPrompt()
-        {
-            if (LockedRefreshPrompt)
-            {
-                Plugin.LogSource.LogError("RefreshPrompt cannot be called inside the handler");
-            }
-            else
-            {
-
-                UpdateExfilPrompt(false);
-            }
-        }
     }
 }
