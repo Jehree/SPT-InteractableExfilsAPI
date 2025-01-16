@@ -244,40 +244,59 @@ namespace InteractableExfilsAPI.Singletons
             return session.PlayerOwner.AvailableInteractionState;
         }
 
-        internal static bool ExfilIsLabElevator(ExfiltrationPoint exfil)
+        internal static bool IsExfilLabElevator(ExfiltrationPoint exfil)
         {
             GameWorld gameWorld = Singleton<GameWorld>.Instance;
-            if (gameWorld.LocationId == "laboratory" && exfil.Settings.Name.Contains("Elevator"))
-            {
-                return true;
-            }
-
-            return false;
+            return gameWorld.LocationId == "laboratory" && exfil.Settings.Name.Contains("Elevator");
         }
 
-        internal static bool ExfilIsInterchangeSafeRoom(ExfiltrationPoint exfil)
+        internal static bool IsExfilInterchangeSafeRoom(ExfiltrationPoint exfil)
         {
             GameWorld gameWorld = Singleton<GameWorld>.Instance;
-            if (gameWorld.LocationId.ToLower() == "interchange" && exfil.Settings.Name == "Saferoom Exfil")
-            {
-                return true;
-            }
 
-            return false;
+            // TODO: remove this line
+            Plugin.LogSource.LogInfo($"Debug gameWorld.LocationId = {gameWorld.LocationId}");
+
+            return gameWorld.LocationId.ToLower() == "interchange" && exfil.Settings.Name == "Saferoom Exfil";
         }
 
         // mostly useful for car exfils
-        internal static bool ExfilIsShared(ExfiltrationPoint exfil)
+        internal static bool IsExfilShared(ExfiltrationPoint exfil)
         {
             return exfil.Settings.ExfiltrationType == EExfiltrationType.SharedTimer;
         }
 
-        // A special exfil is an exfil that don't need any custom exfil trigger
+        internal static bool IsExfilSwitchLabElevator(Switch @switch)
+        {
+            if (@switch == null || @switch.ExfiltrationPoint == null)
+            {
+                return false;
+            }
+
+            return IsExfilLabElevator(@switch.ExfiltrationPoint);
+        }
+
+        internal static bool IsExfilSwitchInterchangeSafeRoom(Switch @switch)
+        {
+            if (@switch == null || @switch.ExfiltrationPoint == null)
+            {
+                return false;
+            }
+
+            return IsExfilInterchangeSafeRoom(@switch.ExfiltrationPoint);
+        }
+
+        // An exfil is considered as special when we don't want to create any custom exfil zone for those exits.
+        // We want to let the game handle the default behaviour, so in addition the user should not be able to cancel the extract here.
+        //
+        // - Shared exfils (mostly used for car extracts, but we assume that all exfils with a shared timer should be uncancellable)
+        // - Laboratory elevator
+        // - Interchange Saferoom
         internal static bool IsSpecialExfil(ExfiltrationPoint exfil)
         {
-            if (ExfilIsShared(exfil)) return true;
-            if (ExfilIsLabElevator(exfil)) return true;
-            if (ExfilIsInterchangeSafeRoom(exfil)) return true;
+            if (IsExfilShared(exfil)) return true;
+            if (IsExfilLabElevator(exfil)) return true;
+            if (IsExfilInterchangeSafeRoom(exfil)) return true;
 
             return false;
         }
