@@ -78,22 +78,22 @@ namespace InteractableExfilsAPI.Patches
             }
 
             // 2. check for other exfils (based on a switch)
-            if (interactive is Switch interactiveSwitch)
+            if (interactive is Switch @switch)
             {
-                if (interactiveSwitch == null || interactiveSwitch.ExfiltrationPoint == null)
+                if (@switch == null || @switch.ExfiltrationPoint == null)
                 {
                     return false;
                 }
 
-                if (InteractableExfilsService.ExfilIsLabElevator(interactiveSwitch.ExfiltrationPoint))
+                if (InteractableExfilsService.ExfilIsLabElevator(@switch.ExfiltrationPoint))
                 {
                     return true;
                 }
 
-                if (InteractableExfilsService.ExfilIsInterchangeSafeRoom(interactiveSwitch.ExfiltrationPoint))
+                if (InteractableExfilsService.ExfilIsInterchangeSafeRoom(@switch.ExfiltrationPoint))
                 {
                     // This is to avoid override intermediate switches (like the interchange power switch for example)
-                    if (interactiveSwitch.NextSwitches != null && interactiveSwitch.NextSwitches.Length <= 1)
+                    if (@switch.NextSwitches != null && @switch.NextSwitches.Length <= 1)
                     {
                         return true;
                     }
@@ -105,7 +105,7 @@ namespace InteractableExfilsAPI.Patches
 
         private static ExfiltrationPoint GetExfilPointFromInteractive(object interactive)
         {
-            if (interactive is Switch interactiveSwitch) return @interactiveSwitch.ExfiltrationPoint;
+            if (interactive is Switch @switch) return @switch.ExfiltrationPoint;
             if (interactive is ExfiltrationPoint point) return point;
 
             return null;
