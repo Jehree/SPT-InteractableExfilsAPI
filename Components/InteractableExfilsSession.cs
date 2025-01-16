@@ -43,17 +43,31 @@ namespace InteractableExfilsAPI.Components
             InteractableExfilsService.Instance().ResetLastUsedCustomExfilTrigger();
         }
 
+        // A special exfil is an exfil that don't need any custom exfil trigger
+        private bool IsSpecialExfil(ExfiltrationPoint exfil)
+        {
+            if (InteractableExfilsService.ExfilIsCar(exfil)) return true;
+            if (InteractableExfilsService.ExfilIsLabElevator(exfil)) return true;
+            if (InteractableExfilsService.ExfilIsInterchangeSafeRoom(exfil)) return true;
+
+            return false;
+        }
+
         private void CreateAllCustomExfilTriggers()
         {
             foreach (var exfil in ActiveExfils)
             {
-                if (InteractableExfilsService.ExfilIsCar(exfil) || InteractableExfilsService.ExfilIsInteractable(exfil)) continue;
-                CreateCustomExfilTriggerObject(exfil, true);
+                if (!IsSpecialExfil(exfil))
+                {
+                    CreateCustomExfilTriggerObject(exfil, true);
+                }
             }
             foreach (var exfil in InactiveExfils)
             {
-                if (InteractableExfilsService.ExfilIsCar(exfil) || InteractableExfilsService.ExfilIsInteractable(exfil)) continue;
-                CreateCustomExfilTriggerObject(exfil, false);
+                if (!IsSpecialExfil(exfil))
+                {
+                    CreateCustomExfilTriggerObject(exfil, false);
+                }
             }
         }
 

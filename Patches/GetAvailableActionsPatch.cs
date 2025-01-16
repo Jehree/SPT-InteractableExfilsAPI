@@ -67,24 +67,27 @@ namespace InteractableExfilsAPI.Patches
         {
             if (interactive is not Switch) return false;
             Switch switcheroo = interactive as Switch;
-            if (switcheroo == null || switcheroo.ExfiltrationPoint == null) return false;
-            if (!InteractableExfilsService.ExfilIsInteractable(switcheroo.ExfiltrationPoint)) return false;
 
-            Plugin.LogSource.LogInfo($"Debug switch.Interaction: {switcheroo.Interaction}");
-            Plugin.LogSource.LogInfo($"Debug switch.NextSwitches.Length: {switcheroo.NextSwitches.Length}");
-            Plugin.LogSource.LogInfo($"Debug switch.ExtractionZoneTip: {switcheroo.ExtractionZoneTip}");
-            Plugin.LogSource.LogInfo($"Debug switch.ConditionStatus.Length: {switcheroo.ConditionStatus.Length}");
-            Plugin.LogSource.LogInfo($"Debug switch.PreviousSwitch (exist?): {switcheroo.PreviousSwitch != null}");
-            Plugin.LogSource.LogInfo($"Debug switch.TargetStatus: {switcheroo.TargetStatus}");
-            Plugin.LogSource.LogInfo($"Debug switch.ContextMenuTip: {switcheroo.ContextMenuTip}");
-
-            // This is to avoid overriding intermediate switches (like the interchange power switch for example)
-            if (switcheroo.NextSwitches != null && switcheroo.NextSwitches.Length > 1)
+            if (switcheroo == null || switcheroo.ExfiltrationPoint == null)
             {
                 return false;
             }
 
-            return true;
+            if (InteractableExfilsService.ExfilIsLabElevator(switcheroo.ExfiltrationPoint))
+            {
+                return true;
+            }
+
+            if (InteractableExfilsService.ExfilIsInterchangeSafeRoom(switcheroo.ExfiltrationPoint))
+            {
+                // This is to avoid override intermediate switches (like the interchange power switch for example)
+                if (switcheroo.NextSwitches != null && switcheroo.NextSwitches.Length <= 1)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private static ExfiltrationPoint GetExfilPointFromInteractive(object interactive)
