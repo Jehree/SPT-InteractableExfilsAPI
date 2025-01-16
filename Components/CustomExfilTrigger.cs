@@ -57,7 +57,7 @@ namespace InteractableExfilsAPI.Components
                 }
                 else
                 {
-                    ForceSetExfilZoneEnabled(Settings.ExtractAreaStartsEnabled.Value);
+                    ForceSetExfilZoneEnabled(Settings.AutoExtractEnabled.Value);
                 }
             }
         }
