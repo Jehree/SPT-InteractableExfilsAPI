@@ -44,6 +44,12 @@ namespace InteractableExfilsAPI.Patches
             if (IsCarExtract(interactive) || IsInteractableExfil(interactive))
             {
                 ExfiltrationPoint exfil = GetExfilPointFromInteractive(interactive);
+                if (exfil == null)
+                {
+                    Plugin.LogSource.LogError("Cannot retrieve exfil point from interactive");
+                    return true;
+                }
+
                 List<ActionsTypesClass> vanillaActions = GetVanillaInteractionActions(owner, interactive);
                 CustomExfilTrigger customTrigger = CreateCustomExfilTrigger(exfil, vanillaActions);
                 ActionsReturnClass prompt = customTrigger.CreateExfilPrompt();
@@ -65,25 +71,32 @@ namespace InteractableExfilsAPI.Patches
         // vanilla interactable exfils (elevator exfils and saferoom exfil)
         private static bool IsInteractableExfil(object interactive)
         {
-            if (interactive is not Switch) return false;
-            Switch switcheroo = interactive as Switch;
-
-            if (switcheroo == null || switcheroo.ExfiltrationPoint == null)
+            // 1. check for car exfils
+            if (interactive is ExfiltrationPoint point)
             {
-                return false;
+                return InteractableExfilsService.ExfilIsCar(point);
             }
 
-            if (InteractableExfilsService.ExfilIsLabElevator(switcheroo.ExfiltrationPoint))
+            // 2. check for other exfils (based on a switch)
+            if (interactive is Switch interactiveSwitch)
             {
-                return true;
-            }
+                if (interactiveSwitch == null || interactiveSwitch.ExfiltrationPoint == null)
+                {
+                    return false;
+                }
 
-            if (InteractableExfilsService.ExfilIsInterchangeSafeRoom(switcheroo.ExfiltrationPoint))
-            {
-                // This is to avoid override intermediate switches (like the interchange power switch for example)
-                if (switcheroo.NextSwitches != null && switcheroo.NextSwitches.Length <= 1)
+                if (InteractableExfilsService.ExfilIsLabElevator(interactiveSwitch.ExfiltrationPoint))
                 {
                     return true;
+                }
+
+                if (InteractableExfilsService.ExfilIsInterchangeSafeRoom(interactiveSwitch.ExfiltrationPoint))
+                {
+                    // This is to avoid override intermediate switches (like the interchange power switch for example)
+                    if (interactiveSwitch.NextSwitches != null && interactiveSwitch.NextSwitches.Length <= 1)
+                    {
+                        return true;
+                    }
                 }
             }
 
@@ -92,8 +105,10 @@ namespace InteractableExfilsAPI.Patches
 
         private static ExfiltrationPoint GetExfilPointFromInteractive(object interactive)
         {
-            if (interactive is Switch @switch) return @switch.ExfiltrationPoint;
-            return interactive as ExfiltrationPoint;
+            if (interactive is Switch interactiveSwitch) return @interactiveSwitch.ExfiltrationPoint;
+            if (interactive is ExfiltrationPoint point) return point;
+
+            return null;
         }
 
         private static List<ActionsTypesClass> GetVanillaInteractionActions(GamePlayerOwner gamePlayerOwner, object interactive)
