@@ -2,14 +2,12 @@
 using EFT;
 using EFT.Interactive;
 using EFT.UI;
-using HarmonyLib;
 using InteractableExfilsAPI.Common;
 using InteractableExfilsAPI.Components;
 using InteractableExfilsAPI.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace InteractableExfilsAPI.Singletons
 {
@@ -63,32 +61,12 @@ namespace InteractableExfilsAPI.Singletons
 
     public class InteractableExfilsService
     {
-        public bool DisableVanillaActions { get; set; } = false;
-        public delegate OnActionsAppliedResult ActionsAppliedEventHandler(ExfiltrationPoint exfil, CustomExfilTrigger customExfilTrigger, bool exfilIsAvailableToPlayer);
-
         // other mods can subscribe to this event and optionally pass ActionsTypesClass(es) back to be added to the interactable objects
         public event ActionsAppliedEventHandler OnActionsAppliedEvent;
+        public delegate OnActionsAppliedResult ActionsAppliedEventHandler(ExfiltrationPoint exfil, CustomExfilTrigger customExfilTrigger, bool exfilIsAvailableToPlayer);
+        public bool DisableVanillaActions { get; set; } = false;
+
         private CustomExfilTrigger LastUsedCustomExfilTrigger { get; set; }
-
-        internal void ResetLastUsedCustomExfilTrigger()
-        {
-            LastUsedCustomExfilTrigger = null;
-        }
-
-        private static CustomExfilAction WrapCustomExfilAction(CustomExfilAction action)
-        {
-            return new CustomExfilAction(action.GetName, action.GetDisabled, () =>
-            {
-                if (action.GetDisabled())
-                {
-                    // this is a guard because it's still possible to select a disabled action (even if the player can't)
-                    return;
-                }
-
-                action.Action();
-                RefreshPrompt(); // automatic prompt re-rendering when an action is performed by the user
-            });
-        }
 
         public virtual OnActionsAppliedResult OnActionsApplied(ExfiltrationPoint exfil, CustomExfilTrigger customExfilTrigger, bool exfilIsAvailableToPlayer)
         {
@@ -151,61 +129,6 @@ namespace InteractableExfilsAPI.Singletons
             return session.PlayerOwner.AvailableInteractionState.Value == null;
         }
 
-        private static CustomExfilAction GetDebugAction(ExfiltrationPoint exfil)
-        {
-            return new CustomExfilAction(
-                "Print Debug Info To Console",
-                false,
-                () =>
-                {
-                    var gameWorld = Singleton<GameWorld>.Instance;
-                    var player = gameWorld.MainPlayer;
-
-                    foreach (var req in exfil.Requirements)
-                    {
-                        ConsoleScreen.Log($"... {req.Requirement.ToString()}");
-                    }
-                    ConsoleScreen.Log($"Requirements: ");
-                    ConsoleScreen.Log($"Chance: {exfil.Settings.Chance}");
-                    ConsoleScreen.Log($"Exfil Id: {exfil.Settings.Name}");
-                    ConsoleScreen.Log($"EXFIL INFO:\n");
-
-                    ConsoleScreen.Log($"Map Id: {gameWorld.LocationId}");
-                    ConsoleScreen.Log($"WORLD INFO:\n");
-
-                    List<string> exfilNames = new List<string>();
-                    foreach (var activeExfil in player.gameObject.GetComponent<InteractableExfilsSession>().ActiveExfils)
-                    {
-                        exfilNames.Add(activeExfil.Settings.Name);
-                    }
-                    string combinedString = string.Join(", ", exfilNames);
-                    ConsoleScreen.Log(combinedString);
-                    ConsoleScreen.Log($"Active Exfils:");
-                    ConsoleScreen.Log($"Player Rotation (Quaternion): {player.CameraPosition.rotation}");
-                    ConsoleScreen.Log($"Player Rotation (Euler): {player.CameraPosition.rotation.eulerAngles}");
-                    ConsoleScreen.Log($"Player Position: {player.gameObject.transform.position}");
-                    ConsoleScreen.Log($"Profile Side: {player.Side.ToString()}");
-                    ConsoleScreen.Log($"Profile Id: {player.ProfileId}");
-                    ConsoleScreen.Log($"PLAYER INFO:\n");
-
-                    Singleton<GUISounds>.Instance.PlayUISound(EUISoundType.TradeOperationComplete);
-                }
-            );
-        }
-
-        private static CustomExfilAction GetExfilToggleAction(CustomExfilTrigger customExfilTrigger)
-        {
-            string customActionName = customExfilTrigger.ExfilEnabled
-              ? "Cancel".Localized()
-              : "Extraction point".Localized();
-
-            return new CustomExfilAction(
-                customActionName,
-                false,
-                customExfilTrigger.ToggleExfilZoneEnabled
-            );
-        }
-
         /// <summary>
         /// Retrieve the current session
         /// </summary>
@@ -261,59 +184,6 @@ namespace InteractableExfilsAPI.Singletons
             }
 
             return session.PlayerOwner.AvailableInteractionState;
-        }
-
-        private static bool IsExfilLabElevator(ExfiltrationPoint exfil)
-        {
-            GameWorld gameWorld = Singleton<GameWorld>.Instance;
-            return gameWorld.LocationId == "laboratory" && exfil.Settings.Name.Contains("Elevator");
-        }
-
-        private static bool IsExfilInterchangeSafeRoom(ExfiltrationPoint exfil)
-        {
-            GameWorld gameWorld = Singleton<GameWorld>.Instance;
-            return gameWorld.LocationId.ToLower() == "interchange" && exfil.Settings.Name == "Saferoom Exfil";
-        }
-
-        // mostly useful for car exfils
-        internal static bool IsExfilShared(ExfiltrationPoint exfil)
-        {
-            return exfil.Settings.ExfiltrationType == EExfiltrationType.SharedTimer;
-        }
-
-        internal static bool IsExfilSwitchLabElevator(Switch @switch)
-        {
-            if (@switch == null || @switch.ExfiltrationPoint == null)
-            {
-                return false;
-            }
-
-            return IsExfilLabElevator(@switch.ExfiltrationPoint);
-        }
-
-        internal static bool IsExfilSwitchInterchangeSafeRoom(Switch @switch)
-        {
-            if (@switch == null || @switch.ExfiltrationPoint == null)
-            {
-                return false;
-            }
-
-            return IsExfilInterchangeSafeRoom(@switch.ExfiltrationPoint);
-        }
-
-        // An exfil is considered as special when we don't want to create any custom exfil zone for those exits.
-        // We want to let the game handle the default behaviour, so in addition the user should not be able to cancel the extract here.
-        //
-        // - Shared exfils (mostly used for car extracts, but we assume that all exfils with a shared timer should be uncancellable)
-        // - Laboratory elevator
-        // - Interchange Saferoom
-        internal static bool IsSpecialExfil(ExfiltrationPoint exfil)
-        {
-            if (IsExfilShared(exfil)) return true;
-            if (IsExfilLabElevator(exfil)) return true;
-            if (IsExfilInterchangeSafeRoom(exfil)) return true;
-
-            return false;
         }
 
         /// <summary>
@@ -372,6 +242,134 @@ namespace InteractableExfilsAPI.Singletons
             CustomExfilAction customExfilAction = GetDebugAction(exfil);
 
             return new OnActionsAppliedResult(customExfilAction);
+        }
+
+        internal void ResetLastUsedCustomExfilTrigger()
+        {
+            LastUsedCustomExfilTrigger = null;
+        }
+
+        // mostly useful for car exfils
+        internal static bool IsExfilShared(ExfiltrationPoint exfil)
+        {
+            return exfil.Settings.ExfiltrationType == EExfiltrationType.SharedTimer;
+        }
+
+        internal static bool IsExfilSwitchLabElevator(Switch @switch)
+        {
+            if (@switch == null || @switch.ExfiltrationPoint == null)
+            {
+                return false;
+            }
+
+            return IsExfilLabElevator(@switch.ExfiltrationPoint);
+        }
+
+        internal static bool IsExfilSwitchInterchangeSafeRoom(Switch @switch)
+        {
+            if (@switch == null || @switch.ExfiltrationPoint == null)
+            {
+                return false;
+            }
+
+            return IsExfilInterchangeSafeRoom(@switch.ExfiltrationPoint);
+        }
+
+        // An exfil is considered as special when we don't want to create any custom exfil zone for those exits.
+        // We want to let the game handle the default behaviour, so in addition the user should not be able to cancel the extract here.
+        //
+        // - Shared exfils (mostly used for car extracts, but we assume that all exfils with a shared timer should be uncancellable)
+        // - Laboratory elevator
+        // - Interchange Saferoom
+        internal static bool IsSpecialExfil(ExfiltrationPoint exfil)
+        {
+            if (IsExfilShared(exfil)) return true;
+            if (IsExfilLabElevator(exfil)) return true;
+            if (IsExfilInterchangeSafeRoom(exfil)) return true;
+
+            return false;
+        }
+
+        private static CustomExfilAction WrapCustomExfilAction(CustomExfilAction action)
+        {
+            return new CustomExfilAction(action.GetName, action.GetDisabled, () =>
+            {
+                if (action.GetDisabled())
+                {
+                    // this is a guard because it's still possible to select a disabled action (even if the player can't)
+                    return;
+                }
+
+                action.Action();
+                RefreshPrompt(); // automatic prompt re-rendering when an action is performed by the user
+            });
+        }
+
+        private static CustomExfilAction GetDebugAction(ExfiltrationPoint exfil)
+        {
+            return new CustomExfilAction(
+                "Print Debug Info To Console",
+                false,
+                () =>
+                {
+                    var gameWorld = Singleton<GameWorld>.Instance;
+                    var player = gameWorld.MainPlayer;
+
+                    foreach (var req in exfil.Requirements)
+                    {
+                        ConsoleScreen.Log($"... {req.Requirement.ToString()}");
+                    }
+                    ConsoleScreen.Log($"Requirements: ");
+                    ConsoleScreen.Log($"Chance: {exfil.Settings.Chance}");
+                    ConsoleScreen.Log($"Exfil Id: {exfil.Settings.Name}");
+                    ConsoleScreen.Log($"EXFIL INFO:\n");
+
+                    ConsoleScreen.Log($"Map Id: {gameWorld.LocationId}");
+                    ConsoleScreen.Log($"WORLD INFO:\n");
+
+                    List<string> exfilNames = new List<string>();
+                    foreach (var activeExfil in player.gameObject.GetComponent<InteractableExfilsSession>().ActiveExfils)
+                    {
+                        exfilNames.Add(activeExfil.Settings.Name);
+                    }
+                    string combinedString = string.Join(", ", exfilNames);
+                    ConsoleScreen.Log(combinedString);
+                    ConsoleScreen.Log($"Active Exfils:");
+                    ConsoleScreen.Log($"Player Rotation (Quaternion): {player.CameraPosition.rotation}");
+                    ConsoleScreen.Log($"Player Rotation (Euler): {player.CameraPosition.rotation.eulerAngles}");
+                    ConsoleScreen.Log($"Player Position: {player.gameObject.transform.position}");
+                    ConsoleScreen.Log($"Profile Side: {player.Side.ToString()}");
+                    ConsoleScreen.Log($"Profile Id: {player.ProfileId}");
+                    ConsoleScreen.Log($"PLAYER INFO:\n");
+
+                    Singleton<GUISounds>.Instance.PlayUISound(EUISoundType.TradeOperationComplete);
+                }
+            );
+        }
+
+        private static CustomExfilAction GetExfilToggleAction(CustomExfilTrigger customExfilTrigger)
+        {
+            string customActionName = customExfilTrigger.ExfilEnabled
+              ? "Cancel".Localized()
+              : "Extraction point".Localized();
+
+            return new CustomExfilAction(
+                customActionName,
+                false,
+                customExfilTrigger.ToggleExfilZoneEnabled
+            );
+        }
+
+        private static bool IsExfilLabElevator(ExfiltrationPoint exfil)
+        {
+            GameWorld gameWorld = Singleton<GameWorld>.Instance;
+            return gameWorld.LocationId == "laboratory" && exfil.Settings.Name.Contains("Elevator");
+        }
+
+        private static bool IsExfilInterchangeSafeRoom(ExfiltrationPoint exfil)
+        {
+            GameWorld gameWorld = Singleton<GameWorld>.Instance;
+            return gameWorld.LocationId.ToLower() == "interchange" && exfil.Settings.Name == "Saferoom Exfil";
         }
     }
 }
