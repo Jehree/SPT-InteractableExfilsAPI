@@ -244,16 +244,7 @@ namespace InteractableExfilsAPI.Singletons
             return session.PlayerOwner.AvailableInteractionState;
         }
 
-        public static bool ExfilHasRequirement(ExfiltrationPoint exfil, ERequirementState requirement)
-        {
-            foreach (var req in exfil.Requirements)
-            {
-                if (req.Requirement == requirement) return true;
-            }
-            return false;
-        }
-
-        public static bool ExfilIsLabElevator(ExfiltrationPoint exfil)
+        internal static bool ExfilIsLabElevator(ExfiltrationPoint exfil)
         {
             GameWorld gameWorld = Singleton<GameWorld>.Instance;
             if (gameWorld.LocationId == "laboratory" && exfil.Settings.Name.Contains("Elevator"))
@@ -264,7 +255,7 @@ namespace InteractableExfilsAPI.Singletons
             return false;
         }
 
-        public static bool ExfilIsInterchangeSafeRoom(ExfiltrationPoint exfil)
+        internal static bool ExfilIsInterchangeSafeRoom(ExfiltrationPoint exfil)
         {
             GameWorld gameWorld = Singleton<GameWorld>.Instance;
             if (gameWorld.LocationId.ToLower() == "interchange" && exfil.Settings.Name == "Saferoom Exfil")
@@ -275,31 +266,23 @@ namespace InteractableExfilsAPI.Singletons
             return false;
         }
 
-        public static bool ExfilIsCar(ExfiltrationPoint exfil)
+        // mostly useful for car exfils
+        internal static bool ExfilIsShared(ExfiltrationPoint exfil)
         {
-            // exfils with TransferItem requirement and shared timer is considered as car exfil
-
-            if (
-                ExfilHasRequirement(exfil, ERequirementState.TransferItem) &&
-                exfil.Settings.ExfiltrationType == EExfiltrationType.SharedTimer
-            )
-            {
-                return true;
-            }
-            return false;
+            return exfil.Settings.ExfiltrationType == EExfiltrationType.SharedTimer;
         }
 
         // A special exfil is an exfil that don't need any custom exfil trigger
-        public static bool IsSpecialExfil(ExfiltrationPoint exfil)
+        internal static bool IsSpecialExfil(ExfiltrationPoint exfil)
         {
-            if (ExfilIsCar(exfil)) return true;
+            if (ExfilIsShared(exfil)) return true;
             if (ExfilIsLabElevator(exfil)) return true;
             if (ExfilIsInterchangeSafeRoom(exfil)) return true;
 
             return false;
         }
 
-        public void AddPlayerToPlayersMetAllRequirements(ExfiltrationPoint exfil, string profileId)
+        internal void AddPlayerToPlayersMetAllRequirements(ExfiltrationPoint exfil, string profileId)
         {
             List<string> playerIdList = _exfilPlayersMetAllRequirementsFieldInfo.GetValue(exfil) as List<string>;
             if (playerIdList.Contains(profileId)) return;
