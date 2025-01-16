@@ -47,12 +47,12 @@ namespace InteractableExfilsAPI.Components
         {
             foreach (var exfil in ActiveExfils)
             {
-                if (InteractableExfilsService.ExfilIsCar(exfil) || InteractableExfilsService.ExfilIsElevator(exfil)) continue;
+                if (InteractableExfilsService.ExfilIsCar(exfil) || InteractableExfilsService.ExfilIsInteractable(exfil)) continue;
                 CreateCustomExfilTriggerObject(exfil, true);
             }
             foreach (var exfil in InactiveExfils)
             {
-                if (InteractableExfilsService.ExfilIsCar(exfil) || InteractableExfilsService.ExfilIsElevator(exfil)) continue;
+                if (InteractableExfilsService.ExfilIsCar(exfil) || InteractableExfilsService.ExfilIsInteractable(exfil)) continue;
                 CreateCustomExfilTriggerObject(exfil, false);
             }
         }
