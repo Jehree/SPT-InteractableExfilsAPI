@@ -6,7 +6,7 @@ namespace InteractableExfilsAPI.Helpers
 {
     public class Settings
     {
-        public static ConfigEntry<bool> ExtractAreaStartsEnabled;
+        public static ConfigEntry<bool> AutoExtractEnabled;
         public static ConfigEntry<bool> InactiveExtractsDisplayUnavailable;
         public static ConfigEntry<bool> DebugMode;
 
@@ -17,7 +17,7 @@ namespace InteractableExfilsAPI.Helpers
 
         public static void Init(ConfigFile config)
         {
-            ExtractAreaStartsEnabled = config.Bind(
+            AutoExtractEnabled = config.Bind(
                 "1: Settings",
                 "Auto-Extract",
                 false,
