@@ -68,7 +68,6 @@ namespace InteractableExfilsAPI.Singletons
 
         // other mods can subscribe to this event and optionally pass ActionsTypesClass(es) back to be added to the interactable objects
         public event ActionsAppliedEventHandler OnActionsAppliedEvent;
-        private readonly FieldInfo _exfilPlayersMetAllRequirementsFieldInfo = AccessTools.Field(typeof(ExfiltrationPoint), "_playersMetAllRequirements");
         private CustomExfilTrigger LastUsedCustomExfilTrigger { get; set; }
 
         internal void ResetLastUsedCustomExfilTrigger()
@@ -315,14 +314,6 @@ namespace InteractableExfilsAPI.Singletons
             if (IsExfilInterchangeSafeRoom(exfil)) return true;
 
             return false;
-        }
-
-        internal void AddPlayerToPlayersMetAllRequirements(ExfiltrationPoint exfil, string profileId)
-        {
-            List<string> playerIdList = _exfilPlayersMetAllRequirementsFieldInfo.GetValue(exfil) as List<string>;
-            if (playerIdList.Contains(profileId)) return;
-            playerIdList.Add(profileId);
-            _exfilPlayersMetAllRequirementsFieldInfo.SetValue(exfil, playerIdList);
         }
 
         /// <summary>

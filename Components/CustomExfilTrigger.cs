@@ -2,12 +2,14 @@
 using EFT;
 using EFT.Interactive;
 using EFT.UI;
+using HarmonyLib;
 using InteractableExfilsAPI.Common;
 using InteractableExfilsAPI.Helpers;
 using InteractableExfilsAPI.Singletons;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
 namespace InteractableExfilsAPI.Components
@@ -150,20 +152,33 @@ namespace InteractableExfilsAPI.Components
             }
         }
 
+        private void RefreshPlayerMetRequirements()
+        {
+            Player player = _session.MainPlayer;
+            string profileId = player.ProfileId;
+
+            if (Exfil.HasRequirements && !Exfil.HasMetRequirements(profileId))
+            {
+                if (!Exfil.UnmetRequirements(player).ToArray().Any())
+                {
+                    FieldInfo field = AccessTools.Field(typeof(ExfiltrationPoint), "_playersMetAllRequirements");
+                    List<string> playerIdList = field.GetValue(Exfil) as List<string>;
+                    if (playerIdList.Contains(profileId)) return;
+                    playerIdList.Add(profileId);
+                    field.SetValue(Exfil, playerIdList);
+                }
+            }
+        }
+
         /// <summary>
         /// Toggles exfil zone enabled normally. Does exfil requirement checks and gives the player tips on missing requirements if they are not met.
         /// </summary>
         public void ToggleExfilZoneEnabled()
         {
+            RefreshPlayerMetRequirements();
+
             if (Exfil.HasRequirements && !Exfil.HasMetRequirements(_session.MainPlayer.ProfileId))
             {
-                if (!Exfil.UnmetRequirements(_session.MainPlayer).ToArray<ExfiltrationRequirement>().Any<ExfiltrationRequirement>())
-                {
-                    Singleton<InteractableExfilsService>.Instance.AddPlayerToPlayersMetAllRequirements(Exfil, _session.MainPlayer.ProfileId);
-                    ToggleExfilZoneEnabled();
-                    return;
-                }
-
                 string tips = string.Join(", ", Exfil.GetTips(_session.MainPlayer.ProfileId));
                 ConsoleScreen.Log($"You have not met the extract requirements for {Exfil.Settings.Name}!");
                 NotificationManagerClass.DisplayWarningNotification($"{tips}");
