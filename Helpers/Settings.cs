@@ -1,11 +1,10 @@
 ﻿using System;
 using BepInEx.Configuration;
-using EFT.UI;
 using InteractableExfilsAPI.Singletons;
 
 namespace InteractableExfilsAPI.Helpers
 {
-    internal class Settings
+    public class Settings
     {
         public static ConfigEntry<bool> ExtractAreaStartsEnabled;
         public static ConfigEntry<bool> InactiveExtractsDisplayUnavailable;
