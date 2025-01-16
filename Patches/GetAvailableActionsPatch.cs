@@ -41,10 +41,7 @@ namespace InteractableExfilsAPI.Patches
             var owner = __args[0] as GamePlayerOwner;
             var interactive = __args[1]; // as GInterface139 as of SPT 3.10.3
 
-            bool isCarExtract = InteractiveIsCarExtract(interactive);
-            bool isElevatorSwitch = InteractiveIsElevatorSwitch(interactive);
-
-            if (isCarExtract || isElevatorSwitch)
+            if (IsCarExtract(interactive) || IsInteractableExfil(interactive))
             {
                 ExfiltrationPoint exfil = GetExfilPointFromInteractive(interactive);
                 List<ActionsTypesClass> vanillaActions = GetVanillaInteractionActions(owner, interactive);
@@ -58,19 +55,35 @@ namespace InteractableExfilsAPI.Patches
             return true;
         }
 
-        private static bool InteractiveIsCarExtract(object interactive)
+        private static bool IsCarExtract(object interactive)
         {
             if (interactive is not ExfiltrationPoint) return false;
             if (InteractableExfilsService.ExfilIsCar((ExfiltrationPoint)interactive)) return true;
             return false;
         }
 
-        private static bool InteractiveIsElevatorSwitch(object interactive)
+        // vanilla interactable exfils (elevator exfils and saferoom exfil)
+        private static bool IsInteractableExfil(object interactive)
         {
             if (interactive is not Switch) return false;
             Switch switcheroo = interactive as Switch;
-            if (switcheroo.ExfiltrationPoint == null) return false;
-            if (!InteractableExfilsService.ExfilIsElevator(switcheroo.ExfiltrationPoint)) return false;
+            if (switcheroo == null || switcheroo.ExfiltrationPoint == null) return false;
+            if (!InteractableExfilsService.ExfilIsInteractable(switcheroo.ExfiltrationPoint)) return false;
+
+            Plugin.LogSource.LogInfo($"Debug switch.Interaction: {switcheroo.Interaction}");
+            Plugin.LogSource.LogInfo($"Debug switch.NextSwitches.Length: {switcheroo.NextSwitches.Length}");
+            Plugin.LogSource.LogInfo($"Debug switch.ExtractionZoneTip: {switcheroo.ExtractionZoneTip}");
+            Plugin.LogSource.LogInfo($"Debug switch.ConditionStatus.Length: {switcheroo.ConditionStatus.Length}");
+            Plugin.LogSource.LogInfo($"Debug switch.PreviousSwitch (exist?): {switcheroo.PreviousSwitch != null}");
+            Plugin.LogSource.LogInfo($"Debug switch.TargetStatus: {switcheroo.TargetStatus}");
+            Plugin.LogSource.LogInfo($"Debug switch.ContextMenuTip: {switcheroo.ContextMenuTip}");
+
+            // This is to avoid overriding intermediate switches (like the interchange power switch for example)
+            if (switcheroo.NextSwitches != null && switcheroo.NextSwitches.Length > 1)
+            {
+                return false;
+            }
+
             return true;
         }
 
