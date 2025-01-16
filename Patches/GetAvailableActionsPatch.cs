@@ -41,7 +41,7 @@ namespace InteractableExfilsAPI.Patches
             var owner = __args[0] as GamePlayerOwner;
             var interactive = __args[1]; // as GInterface139 as of SPT 3.10.3
 
-            if (IsCarExtract(interactive) || IsInteractableExfil(interactive))
+            if (IsInteractableExfil(interactive))
             {
                 ExfiltrationPoint exfil = GetExfilPointFromInteractive(interactive);
                 if (exfil == null)
@@ -61,20 +61,13 @@ namespace InteractableExfilsAPI.Patches
             return true;
         }
 
-        private static bool IsCarExtract(object interactive)
-        {
-            if (interactive is not ExfiltrationPoint) return false;
-            if (InteractableExfilsService.ExfilIsCar((ExfiltrationPoint)interactive)) return true;
-            return false;
-        }
-
         // vanilla interactable exfils (elevator exfils and saferoom exfil)
         private static bool IsInteractableExfil(object interactive)
         {
             // 1. check for car exfils
             if (interactive is ExfiltrationPoint point)
             {
-                return InteractableExfilsService.ExfilIsCar(point);
+                return InteractableExfilsService.ExfilIsShared(point);
             }
 
             // 2. check for other exfils (based on a switch)
