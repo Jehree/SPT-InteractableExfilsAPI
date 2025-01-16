@@ -387,7 +387,8 @@ namespace InteractableExfilsAPI.Singletons
         private static bool IsExfilInterchangeSafeRoom(ExfiltrationPoint exfil)
         {
             GameWorld gameWorld = Singleton<GameWorld>.Instance;
-            return gameWorld.LocationId.ToLower() == "interchange" && exfil.Settings.Name == "Saferoom Exfil";
+
+            return gameWorld.LocationId == "Interchange" && exfil.Settings.Name == "Saferoom Exfil";
         }
     }
 }
