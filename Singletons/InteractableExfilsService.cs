@@ -282,7 +282,13 @@ namespace InteractableExfilsAPI.Singletons
                 return false;
             }
 
-            return IsExfilInterchangeSafeRoom(@switch.ExfiltrationPoint);
+            if (IsExfilInterchangeSafeRoom(@switch.ExfiltrationPoint))
+            {
+                // This is to ensure lever switches are not counted as exfil prompt
+                return @switch.NextSwitches.Length <= 1;
+            }
+
+            return false;
         }
 
         // An exfil is considered as special when we don't want to create any custom exfil zone for those exits.
