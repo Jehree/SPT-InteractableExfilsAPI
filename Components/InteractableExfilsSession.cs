@@ -109,6 +109,8 @@ namespace InteractableExfilsAPI.Components
         {
             foreach (var exfil in sameSideExfils)
             {
+                if (exfil.gameObject.name.Contains("IEAPIIgnore")) continue;
+
                 if (exfil.InfiltrationMatch(Singleton<GameWorld>.Instance.MainPlayer))
                 {
                     ActiveExfils.Add(exfil);
@@ -121,6 +123,8 @@ namespace InteractableExfilsAPI.Components
 
             foreach (var exfil in oppositeSideExfils)
             {
+                if (exfil.gameObject.name.Contains("IEAPIIgnore")) continue;
+
                 InactiveExfils.Add(exfil);
             }
         }
