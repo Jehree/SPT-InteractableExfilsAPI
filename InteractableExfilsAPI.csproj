@@ -86,6 +86,6 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <PostBuildEvent>copy "$(SolutionDir)\bin\Debug\net471\$(AssemblyName).dll" "$(SolutionDir)\$(PathToSPT)\BepInEx\plugins\$(AssemblyName).dll"</PostBuildEvent>
+    <PostBuildEvent>copy "$(SolutionDir)\bin\Debug\net471\$(AssemblyName).dll" "$(SolutionDir)\$(PathToSPT)\BepInEx\plugins\$(AssemblyName)\$(AssemblyName).dll"</PostBuildEvent>
   </PropertyGroup>
 </Project>

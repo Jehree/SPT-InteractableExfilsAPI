@@ -3,6 +3,14 @@
   "WorkspaceRootPath": "C:\\SP Tarkov\\SPT3.11.X\\Dev\\SPT-InteractableExfilsAPI\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{9076ADE2-F4EE-4B5D-B9A6-29A054CF0A7E}|InteractableExfilsAPI.csproj|c:\\sp tarkov\\spt3.11.x\\dev\\spt-interactableexfilsapi\\plugin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9076ADE2-F4EE-4B5D-B9A6-29A054CF0A7E}|InteractableExfilsAPI.csproj|solutionrelative:plugin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9076ADE2-F4EE-4B5D-B9A6-29A054CF0A7E}|InteractableExfilsAPI.csproj|c:\\sp tarkov\\spt3.11.x\\dev\\spt-interactableexfilsapi\\interactableexfilsapi.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|",
+      "RelativeMoniker": "D:0:0:{9076ADE2-F4EE-4B5D-B9A6-29A054CF0A7E}|InteractableExfilsAPI.csproj|solutionrelative:interactableexfilsapi.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{9076ADE2-F4EE-4B5D-B9A6-29A054CF0A7E}|InteractableExfilsAPI.csproj|c:\\sp tarkov\\spt3.11.x\\dev\\spt-interactableexfilsapi\\components\\customexfiltrigger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{9076ADE2-F4EE-4B5D-B9A6-29A054CF0A7E}|InteractableExfilsAPI.csproj|solutionrelative:components\\customexfiltrigger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -13,10 +21,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{9076ADE2-F4EE-4B5D-B9A6-29A054CF0A7E}|InteractableExfilsAPI.csproj|c:\\sp tarkov\\spt3.11.x\\dev\\spt-interactableexfilsapi\\components\\interactableexfilssession.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{9076ADE2-F4EE-4B5D-B9A6-29A054CF0A7E}|InteractableExfilsAPI.csproj|solutionrelative:components\\interactableexfilssession.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{9076ADE2-F4EE-4B5D-B9A6-29A054CF0A7E}|InteractableExfilsAPI.csproj|c:\\sp tarkov\\spt3.11.x\\dev\\spt-interactableexfilsapi\\plugin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9076ADE2-F4EE-4B5D-B9A6-29A054CF0A7E}|InteractableExfilsAPI.csproj|solutionrelative:plugin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{9076ADE2-F4EE-4B5D-B9A6-29A054CF0A7E}|InteractableExfilsAPI.csproj|c:\\sp tarkov\\spt3.11.x\\dev\\spt-interactableexfilsapi\\patches\\getavailableactionspatch.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -38,11 +42,23 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 6,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 1,
+              "Title": "InteractableExfilsAPI",
+              "DocumentMoniker": "C:\\SP Tarkov\\SPT3.11.X\\Dev\\SPT-InteractableExfilsAPI\\InteractableExfilsAPI.csproj",
+              "RelativeDocumentMoniker": "InteractableExfilsAPI.csproj",
+              "ToolTip": "C:\\SP Tarkov\\SPT3.11.X\\Dev\\SPT-InteractableExfilsAPI\\InteractableExfilsAPI.csproj",
+              "RelativeToolTip": "InteractableExfilsAPI.csproj",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-03-25T19:09:55.036Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
               "Title": "GetAvailableActionsPatch.cs",
               "DocumentMoniker": "C:\\SP Tarkov\\SPT3.11.X\\Dev\\SPT-InteractableExfilsAPI\\Patches\\GetAvailableActionsPatch.cs",
               "RelativeDocumentMoniker": "Patches\\GetAvailableActionsPatch.cs",
@@ -50,12 +66,11 @@
               "RelativeToolTip": "Patches\\GetAvailableActionsPatch.cs",
               "ViewState": "AQIAABEAAAAAAAAAAAAQwAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-25T18:20:02.503Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-25T18:20:02.503Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 6,
               "Title": "GameStartedPatch.cs",
               "DocumentMoniker": "C:\\SP Tarkov\\SPT3.11.X\\Dev\\SPT-InteractableExfilsAPI\\Patches\\GameStartedPatch.cs",
               "RelativeDocumentMoniker": "Patches\\GameStartedPatch.cs",
@@ -63,12 +78,11 @@
               "RelativeToolTip": "Patches\\GameStartedPatch.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-25T18:20:00.155Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-25T18:20:00.155Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "InteractableExfilsSession.cs",
               "DocumentMoniker": "C:\\SP Tarkov\\SPT3.11.X\\Dev\\SPT-InteractableExfilsAPI\\Components\\InteractableExfilsSession.cs",
               "RelativeDocumentMoniker": "Components\\InteractableExfilsSession.cs",
@@ -76,12 +90,11 @@
               "RelativeToolTip": "Components\\InteractableExfilsSession.cs",
               "ViewState": "AQIAAA4AAAAAAAAAAAAwwAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-28T21:12:05.133Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-01-28T21:12:05.133Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 2,
               "Title": "CustomExfilTrigger.cs",
               "DocumentMoniker": "C:\\SP Tarkov\\SPT3.11.X\\Dev\\SPT-InteractableExfilsAPI\\Components\\CustomExfilTrigger.cs",
               "RelativeDocumentMoniker": "Components\\CustomExfilTrigger.cs",
@@ -89,12 +102,11 @@
               "RelativeToolTip": "Components\\CustomExfilTrigger.cs",
               "ViewState": "AQIAADMAAAAAAAAAAAAMwFUAAAAhAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-28T21:11:40.127Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-01-28T21:11:40.127Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
               "Title": "InteractableExfilsService.cs",
               "DocumentMoniker": "C:\\SP Tarkov\\SPT3.11.X\\Dev\\SPT-InteractableExfilsAPI\\Singletons\\InteractableExfilsService.cs",
               "RelativeDocumentMoniker": "Singletons\\InteractableExfilsService.cs",
@@ -102,12 +114,11 @@
               "RelativeToolTip": "Singletons\\InteractableExfilsService.cs",
               "ViewState": "AQIAAHoBAAAAAAAAAAAAAJMBAABPAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-16T01:49:31.091Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-12-16T01:49:31.091Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 0,
               "Title": "Plugin.cs",
               "DocumentMoniker": "C:\\SP Tarkov\\SPT3.11.X\\Dev\\SPT-InteractableExfilsAPI\\Plugin.cs",
               "RelativeDocumentMoniker": "Plugin.cs",
@@ -120,7 +131,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 7,
               "Title": "Examples.cs",
               "DocumentMoniker": "C:\\SP Tarkov\\SPT3.11.X\\Dev\\SPT-InteractableExfilsAPI\\Examples.cs",
               "RelativeDocumentMoniker": "Examples.cs",
