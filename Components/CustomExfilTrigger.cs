@@ -87,6 +87,8 @@ namespace InteractableExfilsAPI.Components
             {
                 collider.enabled = enabled;
             }
+
+            InteractableExfilsService.ForceUpdatePlayerCollisions();
         }
 
         /// <summary>

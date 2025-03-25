@@ -6,8 +6,10 @@ using InteractableExfilsAPI.Common;
 using InteractableExfilsAPI.Components;
 using InteractableExfilsAPI.Helpers;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace InteractableExfilsAPI.Singletons
 {
@@ -175,7 +177,7 @@ namespace InteractableExfilsAPI.Singletons
         /// Get the current prompt state for current player
         /// </summary>
         /// <returns></returns>
-        public static BindableState<ActionsReturnClass> GetAvailableInteractionState()
+        public static BindableStateClass<ActionsReturnClass> GetAvailableInteractionState()
         {
             var session = GetSession();
             if (session == null)
@@ -395,6 +397,18 @@ namespace InteractableExfilsAPI.Singletons
             GameWorld gameWorld = Singleton<GameWorld>.Instance;
 
             return gameWorld.LocationId == "Interchange" && exfil.Settings.Name == "Saferoom Exfil";
+        }
+
+        public static void ForceUpdatePlayerCollisions()
+        {
+            StaticManager.BeginCoroutine(ForceUpdatePlayerCollisionsRoutine());
+        }
+
+        internal static IEnumerator ForceUpdatePlayerCollisionsRoutine()
+        {
+            GetSession().MainPlayer.gameObject.transform.position += new Vector3(0, 0.00001f, 0);
+            yield return null;
+            GetSession().MainPlayer.gameObject.transform.position -= new Vector3(0, 0.00001f, 0);
         }
     }
 }
